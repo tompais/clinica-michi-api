@@ -5,7 +5,7 @@ import { EstadoTurno } from './estado-turno'
 const HORAS_MINIMAS_PARA_CANCELAR = 2
 const MILISEGUNDOS_POR_HORA = 60 * 60 * 1000
 
-export interface DatosDeTurno {
+export interface IDatosDeTurno {
   readonly gatoId: number
   readonly fechaHora: Date
   readonly motivo: string
@@ -22,12 +22,12 @@ export class Turno {
     readonly estado: EstadoTurno,
   ) {}
 
-  static reservar(datos: DatosDeTurno, ahora: Date): Turno {
+  static reservar(datos: IDatosDeTurno, ahora: Date): Turno {
     if (datos.fechaHora <= ahora) throw new ReglaDeNegocioRota('No se puede reservar un turno en el pasado')
     return new Turno(randomUUID(), datos.gatoId, datos.fechaHora, datos.motivo, EstadoTurno.PENDIENTE)
   }
 
-  static reconstruir(datos: DatosDeTurno & { readonly id: string; readonly estado: EstadoTurno }): Turno {
+  static reconstruir(datos: IDatosDeTurno & { readonly id: string; readonly estado: EstadoTurno }): Turno {
     return new Turno(datos.id, datos.gatoId, datos.fechaHora, datos.motivo, datos.estado)
   }
 

@@ -1,5 +1,5 @@
 // Entidad del dominio: un dueño. Inmutable: sus datos no cambian después de crearse.
-export interface DatosDeDuenio {
+export interface IDatosDeDuenio {
   readonly nombre: string
   readonly email: string
 }

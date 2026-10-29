@@ -1,14 +1,14 @@
 import { Body, Controller, Post } from '@nestjs/common'
 import { AdoptarGatoCasoDeUso } from '../../aplicacion/adoptar-gato.caso-de-uso'
-import { AdopcionRespuestaDto } from './dto/adopcion-respuesta.dto'
-import { AdoptarGatoDto } from './dto/adoptar-gato.dto'
+import { AdopcionResponse } from './adopcion.response'
+import { AdoptarGatoRequestBody } from './adoptar-gato.request-body'
 
 @Controller('adopciones')
 export class AdopcionesController {
   constructor(private readonly adoptarGato: AdoptarGatoCasoDeUso) {}
 
   @Post()
-  async adoptar(@Body() dto: AdoptarGatoDto): Promise<AdopcionRespuestaDto> {
-    return AdopcionRespuestaDto.desde(await this.adoptarGato.ejecutar(dto))
+  async adoptar(@Body() body: AdoptarGatoRequestBody): Promise<AdopcionResponse> {
+    return AdopcionResponse.desde(await this.adoptarGato.ejecutar(body))
   }
 }

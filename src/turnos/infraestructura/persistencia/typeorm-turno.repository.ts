@@ -4,13 +4,13 @@ import { And, LessThan, MoreThanOrEqual, Not, type Repository } from 'typeorm'
 import { NoEncontrado } from '../../../shared/dominio/errores'
 import { EstadoTurno } from '../../dominio/estado-turno'
 import type { Turno } from '../../dominio/turno'
-import type { TurnoRepository } from '../../dominio/turno.repository'
+import type { ITurnoRepository } from '../../dominio/turno.repository'
 import { TurnoEntity } from './turno.entity'
 import { TurnoMapper } from './turno.mapper'
 
-// Adaptador: implementa el puerto TurnoRepository con un repositorio tipado de TypeORM.
+// Adaptador: implementa el puerto ITurnoRepository con un repositorio tipado de TypeORM.
 @Injectable()
-export class TypeOrmTurnoRepository implements TurnoRepository {
+export class TypeOrmTurnoRepository implements ITurnoRepository {
   constructor(@InjectRepository(TurnoEntity) private readonly repo: Repository<TurnoEntity>) {}
 
   async guardar(turno: Turno): Promise<void> {

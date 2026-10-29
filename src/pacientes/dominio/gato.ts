@@ -1,6 +1,6 @@
 import { ReglaDeNegocioRota } from '../../shared/dominio/errores'
 
-export interface DatosDeGato {
+export interface IDatosDeGato {
   readonly nombre: string
   readonly nacimiento: string
   readonly alergias: string
@@ -20,7 +20,7 @@ export class Gato {
     readonly adoptado: boolean,
   ) {}
 
-  static reconstruir(datos: DatosDeGato & { readonly id: number; readonly adoptado: boolean }): Gato {
+  static reconstruir(datos: IDatosDeGato & { readonly id: number; readonly adoptado: boolean }): Gato {
     return new Gato(datos.id, datos.nombre, datos.nacimiento, datos.alergias, datos.duenioId, datos.adoptado)
   }
 

@@ -4,6 +4,9 @@
 ### Ver los gatos (vienen cargados Nube, Tom y Copito)
 GET {{base}}/gatos
 
+### Ver solo los gatos en adopción (un query param)
+GET {{base}}/gatos?enAdopcion=true
+
 ### Crear un dueño
 POST {{base}}/duenios
 Content-Type: application/json

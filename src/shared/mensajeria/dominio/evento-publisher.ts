@@ -2,7 +2,7 @@ import type { Topico } from './topico'
 
 // Puerto: el puesto de "alguien que publica eventos".
 // A quien lo usa no le importa si es Pub/Sub o la consola.
-export interface EventoPublisher {
+export interface IEventoPublisher {
   publicar(topico: Topico, datos: Readonly<Record<string, unknown>>): Promise<void>
 }
 

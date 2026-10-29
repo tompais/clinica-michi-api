@@ -1,7 +1,7 @@
 import { IsEmail, IsNotEmpty, IsString } from 'class-validator'
 
-// La forma de los datos que entran para crear un dueño. Nada de tipos anónimos.
-export class CrearDuenioDto {
+// El cuerpo del pedido para crear un dueño. Una clase con sus validaciones, nada de tipos anónimos.
+export class CrearDuenioRequestBody {
   @IsString()
   @IsNotEmpty()
   readonly nombre: string

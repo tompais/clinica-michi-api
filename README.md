@@ -55,7 +55,7 @@ Cada módulo sigue la arquitectura hexagonal y tiene las mismas tres carpetas:
 src/<módulo>/
 ├── dominio/            Entidades inmutables, sus reglas y los puertos (interfaces + Symbol)
 ├── aplicacion/         Los casos de uso: un archivo por cosa que hace la clínica
-├── infraestructura/    Los adaptadores: http (controllers y DTOs), persistencia (entities y repos)
+├── infraestructura/    Los adaptadores: http (controllers, RequestBody, Query y Response), persistencia (entities y repos)
 └── <módulo>.module.ts  Conecta cada puerto con su adaptador
 ```
 
@@ -71,29 +71,29 @@ La regla de oro: `dominio` no importa nada de Nest, TypeORM ni HTTP. Las flechas
 
 ### El viaje de `POST /turnos`
 
-1. [`TurnosController`](src/turnos/infraestructura/http/turnos.controller.ts) recibe el pedido. El [`ReservarTurnoDto`](src/turnos/infraestructura/http/dto/reservar-turno.dto.ts) lo valida.
+1. [`TurnosController`](src/turnos/infraestructura/http/turnos.controller.ts) recibe el pedido. El [`ReservarTurnoRequestBody`](src/turnos/infraestructura/http/reservar-turno.request-body.ts) lo valida.
 2. Llama a [`ReservarTurnoCasoDeUso`](src/turnos/aplicacion/reservar-turno.caso-de-uso.ts), que pide tres puertos por su Symbol: `TURNO_REPOSITORY`, `GATO_REPOSITORY` y `AVISADOR`.
 3. La entidad [`Turno`](src/turnos/dominio/turno.ts) aplica sus reglas: no se reserva en el pasado.
 4. [`turnos.module.ts`](src/turnos/turnos.module.ts) decide quién ocupa cada puerto: `TypeOrmTurnoRepository` guarda en Postgres y `MailAvisador` avisa al dueño.
-5. El controller devuelve un [`TurnoRespuestaDto`](src/turnos/infraestructura/http/dto/turno-respuesta.dto.ts).
+5. El controller devuelve un [`TurnoResponse`](src/turnos/infraestructura/http/turno.response.ts).
 
 ## Del juego al código
 
-| Mundo del Michi Dev Quest                                         | Dónde mirarlo                                                                                                                                      |
-| ----------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
-| La clínica web: endpoints, verbos y JSON                          | [`ejemplos.http`](ejemplos.http)                                                                                                                   |
-| TypeScript y código prolijo: enum con textos, valores por defecto | [`estado-turno.ts`](src/turnos/dominio/estado-turno.ts), [`crear-gato.dto.ts`](src/pacientes/infraestructura/http/dto/crear-gato.dto.ts)           |
-| Node, Bun y las promesas                                          | [`main.ts`](src/main.ts), [`Dockerfile`](Dockerfile), [`package.json`](package.json)                                                               |
-| NestJS: controller, caso de uso y module                          | [`gatos.controller.ts`](src/pacientes/infraestructura/http/gatos.controller.ts), [`pacientes.module.ts`](src/pacientes/pacientes.module.ts)        |
-| Arquitectura: hexagonal y DDD                                     | [`turnos/`](src/turnos) completo                                                                                                                   |
-| Módulos e inyección                                               | [`turnos.module.ts`](src/turnos/turnos.module.ts), [`mensajeria.module.ts`](src/shared/mensajeria/mensajeria.module.ts)                            |
-| Interfaces en Nest con Symbol                                     | [`turno.repository.ts`](src/turnos/dominio/turno.repository.ts), [`avisador.ts`](src/turnos/dominio/avisador.ts)                                   |
-| Testing con Vitest                                                | [`test/`](test)                                                                                                                                    |
-| Bases de datos: claves, ON DELETE, borrado lógico y migraciones   | [`migrations/`](src/shared/infraestructura/database/migrations), [`duenio.entity.ts`](src/pacientes/infraestructura/persistencia/duenio.entity.ts) |
-| SQL: transacciones y FOR UPDATE                                   | [`typeorm-adopcion.repository.ts`](src/adopciones/infraestructura/persistencia/typeorm-adopcion.repository.ts)                                     |
-| Docker y Cloud Run                                                | [`Dockerfile`](Dockerfile), [`docker-compose.yml`](docker-compose.yml)                                                                             |
-| Mensajes y jobs: Pub/Sub y cron                                   | [`mensajeria/`](src/shared/mensajeria), [`enviar-recordatorios.caso-de-uso.ts`](src/recordatorios/aplicacion/enviar-recordatorios.caso-de-uso.ts)  |
-| Del PR a producción                                               | [`.github/workflows/`](.github/workflows)                                                                                                          |
+| Mundo del Michi Dev Quest                                         | Dónde mirarlo                                                                                                                                          |
+| ----------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| La clínica web: endpoints, verbos y JSON                          | [`ejemplos.http`](ejemplos.http)                                                                                                                       |
+| TypeScript y código prolijo: enum con textos, valores por defecto | [`estado-turno.ts`](src/turnos/dominio/estado-turno.ts), [`crear-gato.request-body.ts`](src/pacientes/infraestructura/http/crear-gato.request-body.ts) |
+| Node, Bun y las promesas                                          | [`main.ts`](src/main.ts), [`Dockerfile`](Dockerfile), [`package.json`](package.json)                                                                   |
+| NestJS: controller, caso de uso y module                          | [`gatos.controller.ts`](src/pacientes/infraestructura/http/gatos.controller.ts), [`pacientes.module.ts`](src/pacientes/pacientes.module.ts)            |
+| Arquitectura: hexagonal y DDD                                     | [`turnos/`](src/turnos) completo                                                                                                                       |
+| Módulos e inyección                                               | [`turnos.module.ts`](src/turnos/turnos.module.ts), [`mensajeria.module.ts`](src/shared/mensajeria/mensajeria.module.ts)                                |
+| Interfaces en Nest con Symbol                                     | [`turno.repository.ts`](src/turnos/dominio/turno.repository.ts), [`avisador.ts`](src/turnos/dominio/avisador.ts)                                       |
+| Testing con Vitest                                                | [`test/`](test)                                                                                                                                        |
+| Bases de datos: claves, ON DELETE, borrado lógico y migraciones   | [`migrations/`](src/shared/infraestructura/database/migrations), [`duenio.entity.ts`](src/pacientes/infraestructura/persistencia/duenio.entity.ts)     |
+| SQL: transacciones y FOR UPDATE                                   | [`typeorm-adopcion.repository.ts`](src/adopciones/infraestructura/persistencia/typeorm-adopcion.repository.ts)                                         |
+| Docker y Cloud Run                                                | [`Dockerfile`](Dockerfile), [`docker-compose.yml`](docker-compose.yml)                                                                                 |
+| Mensajes y jobs: Pub/Sub y cron                                   | [`mensajeria/`](src/shared/mensajeria), [`enviar-recordatorios.caso-de-uso.ts`](src/recordatorios/aplicacion/enviar-recordatorios.caso-de-uso.ts)      |
+| Del PR a producción                                               | [`.github/workflows/`](.github/workflows)                                                                                                              |
 
 ## Los tests
 
@@ -124,7 +124,8 @@ Los deploys y el migrate son simulados porque este repo no tiene una nube de ver
 - Entidades del dominio inmutables: cambiar algo devuelve una instancia nueva (`turno.cancelar(ahora)`).
 - Entidades de base en archivos `*.entity.ts`, con nombre `GatoEntity`. Un mapper traduce entre las dos.
 - Repositorios tipados: `Repository<GatoEntity>`. Nada de SQL suelto en el código de la app.
-- Nada de tipos anónimos: lo que entra y sale por HTTP es una clase DTO.
+- Nada de tipos anónimos: lo que entra y sale por HTTP es una clase con su sufijo. `CrearGatoRequestBody` para el cuerpo, `ListarGatosQuery` para los query params y `GatoResponse` para lo que vuelve. El archivo lleva el mismo sufijo: `crear-gato.request-body.ts`.
+- Interfaces con el prefijo `I`: `ITurnoRepository`, `IAvisador`, `IDatosDeTurno`.
 - Valores por defecto en vez de `undefined`. Los pocos `null` tienen un comentario que dice qué significan.
 - `enum` con textos para valores finitos, como `EstadoTurno` o `Topico`.
 - Biome para formato y lint, Knip para lo que sobra y cobertura mínima de 80%.

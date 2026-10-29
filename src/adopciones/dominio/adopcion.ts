@@ -1,4 +1,4 @@
-export interface DatosDeAdopcion {
+export interface IDatosDeAdopcion {
   readonly gatoId: number
   readonly duenioId: number
 }

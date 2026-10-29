@@ -5,17 +5,17 @@ import { DuenioEntity } from '../../../pacientes/infraestructura/persistencia/du
 import { GatoEntity } from '../../../pacientes/infraestructura/persistencia/gato.entity'
 import { PacientesMapper } from '../../../pacientes/infraestructura/persistencia/pacientes.mapper'
 import { NoEncontrado } from '../../../shared/dominio/errores'
-import { Adopcion, type DatosDeAdopcion } from '../../dominio/adopcion'
-import type { AdopcionRepository } from '../../dominio/adopcion.repository'
+import { Adopcion, type IDatosDeAdopcion } from '../../dominio/adopcion'
+import type { IAdopcionRepository } from '../../dominio/adopcion.repository'
 import { AdopcionEntity } from './adopcion.entity'
 
 // Adaptador: la adopción entera corre en una transacción.
 // La regla de quién se puede adoptar la decide el dominio (Gato.adoptar). Acá solo se guarda.
 @Injectable()
-export class TypeOrmAdopcionRepository implements AdopcionRepository {
+export class TypeOrmAdopcionRepository implements IAdopcionRepository {
   constructor(private readonly dataSource: DataSource) {}
 
-  registrar(datos: DatosDeAdopcion): Promise<Adopcion> {
+  registrar(datos: IDatosDeAdopcion): Promise<Adopcion> {
     return this.dataSource.transaction(async (manager) => {
       const gato = await this.bloquearGato(manager, datos.gatoId)
       await this.asegurarQueExisteElDuenio(manager, datos.duenioId)

@@ -1,8 +1,8 @@
 import { Inject, Injectable, Logger } from '@nestjs/common'
-import { AVISADOR, type Avisador } from '../../turnos/dominio/avisador'
-import { TURNO_REPOSITORY, type TurnoRepository } from '../../turnos/dominio/turno.repository'
+import { AVISADOR, type IAvisador } from '../../turnos/dominio/avisador'
+import { type ITurnoRepository, TURNO_REPOSITORY } from '../../turnos/dominio/turno.repository'
 
-interface Rango {
+interface IRango {
   readonly desde: Date
   readonly hasta: Date
 }
@@ -13,8 +13,8 @@ export class EnviarRecordatoriosCasoDeUso {
   private readonly logger = new Logger('Recordatorios')
 
   constructor(
-    @Inject(TURNO_REPOSITORY) private readonly turnos: TurnoRepository,
-    @Inject(AVISADOR) private readonly avisador: Avisador,
+    @Inject(TURNO_REPOSITORY) private readonly turnos: ITurnoRepository,
+    @Inject(AVISADOR) private readonly avisador: IAvisador,
   ) {}
 
   async ejecutar(hoy: Date = new Date()): Promise<number> {
@@ -29,7 +29,7 @@ export class EnviarRecordatoriosCasoDeUso {
   }
 }
 
-function diaSiguienteA(hoy: Date): Rango {
+function diaSiguienteA(hoy: Date): IRango {
   const desde = new Date(hoy)
   desde.setHours(0, 0, 0, 0)
   desde.setDate(desde.getDate() + 1)

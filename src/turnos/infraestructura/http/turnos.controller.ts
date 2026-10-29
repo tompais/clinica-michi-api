@@ -1,8 +1,8 @@
 import { Body, Controller, HttpCode, HttpStatus, Param, ParseUUIDPipe, Post } from '@nestjs/common'
 import { CancelarTurnoCasoDeUso } from '../../aplicacion/cancelar-turno.caso-de-uso'
 import { ReservarTurnoCasoDeUso } from '../../aplicacion/reservar-turno.caso-de-uso'
-import { ReservarTurnoDto } from './dto/reservar-turno.dto'
-import { TurnoRespuestaDto } from './dto/turno-respuesta.dto'
+import { ReservarTurnoRequestBody } from './reservar-turno.request-body'
+import { TurnoResponse } from './turno.response'
 
 // Adaptador de entrada: traduce HTTP a casos de uso. No tiene reglas de negocio.
 @Controller('turnos')
@@ -13,13 +13,13 @@ export class TurnosController {
   ) {}
 
   @Post()
-  async reservar(@Body() dto: ReservarTurnoDto): Promise<TurnoRespuestaDto> {
-    return TurnoRespuestaDto.desde(await this.reservarTurno.ejecutar(dto))
+  async reservar(@Body() body: ReservarTurnoRequestBody): Promise<TurnoResponse> {
+    return TurnoResponse.desde(await this.reservarTurno.ejecutar(body))
   }
 
   @Post(':id/cancelar')
   @HttpCode(HttpStatus.OK)
-  async cancelar(@Param('id', ParseUUIDPipe) id: string): Promise<TurnoRespuestaDto> {
-    return TurnoRespuestaDto.desde(await this.cancelarTurno.ejecutar(id))
+  async cancelar(@Param('id', ParseUUIDPipe) id: string): Promise<TurnoResponse> {
+    return TurnoResponse.desde(await this.cancelarTurno.ejecutar(id))
   }
 }

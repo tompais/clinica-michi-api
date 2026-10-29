@@ -1,7 +1,7 @@
 import type { Turno } from './turno'
 
 // Puerto: lo que el dominio necesita para guardar y buscar turnos.
-export interface TurnoRepository {
+export interface ITurnoRepository {
   guardar(turno: Turno): Promise<void>
   // Devuelve el turno o tira NoEncontrado.
   obtener(id: string): Promise<Turno>

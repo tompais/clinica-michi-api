@@ -1,6 +1,6 @@
 import { IsDateString, IsInt, IsNotEmpty, IsOptional, IsString } from 'class-validator'
 
-export class CrearGatoDto {
+export class CrearGatoRequestBody {
   @IsString()
   @IsNotEmpty()
   readonly nombre: string

@@ -1,8 +1,9 @@
-import { Body, Controller, Get, Post } from '@nestjs/common'
+import { Body, Controller, Get, Post, Query } from '@nestjs/common'
 import { CrearGatoCasoDeUso } from '../../aplicacion/crear-gato.caso-de-uso'
 import { ListarGatosCasoDeUso } from '../../aplicacion/listar-gatos.caso-de-uso'
-import { CrearGatoDto } from './dto/crear-gato.dto'
-import { GatoRespuestaDto } from './dto/gato-respuesta.dto'
+import { CrearGatoRequestBody } from './crear-gato.request-body'
+import { GatoResponse } from './gato.response'
+import { ListarGatosQuery } from './listar-gatos.query'
 
 @Controller('gatos')
 export class GatosController {
@@ -12,13 +13,13 @@ export class GatosController {
   ) {}
 
   @Get()
-  async listar(): Promise<readonly GatoRespuestaDto[]> {
-    const gatos = await this.listarGatos.ejecutar()
-    return gatos.map(GatoRespuestaDto.desde)
+  async listar(@Query() query: ListarGatosQuery): Promise<readonly GatoResponse[]> {
+    const gatos = await this.listarGatos.ejecutar({ soloEnAdopcion: query.enAdopcion })
+    return gatos.map(GatoResponse.desde)
   }
 
   @Post()
-  async crear(@Body() dto: CrearGatoDto): Promise<GatoRespuestaDto> {
-    return GatoRespuestaDto.desde(await this.crearGato.ejecutar(dto))
+  async crear(@Body() body: CrearGatoRequestBody): Promise<GatoResponse> {
+    return GatoResponse.desde(await this.crearGato.ejecutar(body))
   }
 }

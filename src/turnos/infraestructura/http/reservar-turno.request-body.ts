@@ -1,8 +1,8 @@
 import { Type } from 'class-transformer'
 import { IsDate, IsInt, IsNotEmpty, IsString } from 'class-validator'
 
-// La forma de los datos que entran para reservar un turno. Nada de tipos anónimos.
-export class ReservarTurnoDto {
+// El cuerpo del pedido para reservar un turno. Una clase con sus validaciones, nada de tipos anónimos.
+export class ReservarTurnoRequestBody {
   @IsInt()
   readonly gatoId: number
 

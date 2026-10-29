@@ -27,6 +27,15 @@ describe('Pacientes', () => {
     expect(respuesta.body[0]).toMatchObject({ id: COPITO, duenioId: null, enAdopcion: true })
   })
 
+  it('filtra los gatos en adopción con un query param', async () => {
+    // Act
+    const respuesta = await clinica.http().get('/gatos').query({ enAdopcion: 'true' })
+
+    // Assert
+    expect(respuesta.status).toBe(200)
+    expect(respuesta.body.map((gato: { id: number }) => gato.id)).toEqual([COPITO])
+  })
+
   it('crea un gato con valores por defecto cuando no mandan alergias ni dueño', async () => {
     // Arrange
     const gatoNuevo = { nombre: 'Luna', nacimiento: '2024-05-02' }
