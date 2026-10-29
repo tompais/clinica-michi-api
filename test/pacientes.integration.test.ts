@@ -1,6 +1,6 @@
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest'
-import { DuenioEntity } from '../../src/pacientes/infraestructura/persistencia/duenio.entity'
-import { type AppDePrueba, COPITO, crearAppDePrueba, PANCHO } from '../support/app-de-prueba'
+import { DuenioEntity } from '../src/pacientes/infraestructura/persistencia/duenio.entity'
+import { type AppDePrueba, COPITO, crearAppDePrueba, PANCHO } from './support/app-de-prueba'
 
 describe('Pacientes', () => {
   let clinica: AppDePrueba

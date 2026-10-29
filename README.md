@@ -87,8 +87,9 @@ La regla de oro: `dominio` no importa nada de Nest, TypeORM ni HTTP. Las flechas
 
 Seguimos el testing trophy: la mayoría son de integración y los unitarios quedan para reglas con bordes finos.
 
-- [`test/integration/`](test/integration) levanta la app entera con la base en memoria y le pega por HTTP. Solo se reemplazan el mail y Pub/Sub, que salen del sistema.
-- [`test/unit/`](test/unit) prueba la regla de las 2 horas para cancelar un turno.
+- `*.integration.test.ts` levanta la app entera con la base en memoria y le pega por HTTP. Solo se reemplazan el mail y Pub/Sub, que salen del sistema. Ejemplo: [`turnos.integration.test.ts`](test/turnos.integration.test.ts).
+- `*.test.ts` es unitario. Hay uno solo, para la regla de las 2 horas para cancelar: [`turno.test.ts`](test/turno.test.ts).
+- [`test/support/`](test/support) arma la app de prueba y deja la base limpia antes de cada test.
 - Todos siguen AAA: Arrange, Act y Assert, marcados con un comentario.
 
 ## Los workflows

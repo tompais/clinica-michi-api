@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
-import { ReglaDeNegocioRota } from '../../src/shared/dominio/errores'
-import { EstadoTurno } from '../../src/turnos/dominio/estado-turno'
-import { Turno } from '../../src/turnos/dominio/turno'
+import { ReglaDeNegocioRota } from '../src/shared/dominio/errores'
+import { EstadoTurno } from '../src/turnos/dominio/estado-turno'
+import { Turno } from '../src/turnos/dominio/turno'
 
 // Unitario solo para la regla que tiene bordes finos: las 2 horas para cancelar.
 // Lo demás del turno ya lo cubren los tests de integración.

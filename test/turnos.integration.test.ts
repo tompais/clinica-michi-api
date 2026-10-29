@@ -1,5 +1,5 @@
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest'
-import { type AppDePrueba, crearAppDePrueba, enHoras, NUBE } from '../support/app-de-prueba'
+import { type AppDePrueba, crearAppDePrueba, enHoras, NUBE } from './support/app-de-prueba'
 
 describe('Turnos', () => {
   let clinica: AppDePrueba

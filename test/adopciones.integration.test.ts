@@ -1,6 +1,6 @@
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest'
-import { Topico } from '../../src/shared/mensajeria/dominio/topico'
-import { type AppDePrueba, COPITO, crearAppDePrueba, NUBE, RITA } from '../support/app-de-prueba'
+import { Topico } from '../src/shared/mensajeria/dominio/topico'
+import { type AppDePrueba, COPITO, crearAppDePrueba, NUBE, RITA } from './support/app-de-prueba'
 
 describe('Adopciones', () => {
   let clinica: AppDePrueba

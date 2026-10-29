@@ -1,6 +1,6 @@
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest'
-import { EnviarRecordatoriosCasoDeUso } from '../../src/recordatorios/aplicacion/enviar-recordatorios.caso-de-uso'
-import { type AppDePrueba, crearAppDePrueba, NUBE, TOM } from '../support/app-de-prueba'
+import { EnviarRecordatoriosCasoDeUso } from '../src/recordatorios/aplicacion/enviar-recordatorios.caso-de-uso'
+import { type AppDePrueba, crearAppDePrueba, NUBE, TOM } from './support/app-de-prueba'
 
 function maniana(hora: number): Date {
   const fecha = new Date()
