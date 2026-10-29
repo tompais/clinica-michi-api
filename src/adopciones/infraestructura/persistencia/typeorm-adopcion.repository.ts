@@ -21,7 +21,9 @@ export class TypeOrmAdopcionRepository implements AdopcionRepository {
       await this.asegurarQueExisteElDuenio(manager, datos.duenioId)
 
       const adoptado = gato.adoptar(datos.duenioId)
-      await manager.getRepository(GatoEntity).update(adoptado.id, { duenioId: adoptado.duenioId, adoptado: adoptado.adoptado })
+      await manager
+        .getRepository(GatoEntity)
+        .update(adoptado.id, { duenioId: adoptado.duenioId, adoptado: adoptado.adoptado })
 
       const adopciones = manager.getRepository(AdopcionEntity)
       const fila = await adopciones.save(adopciones.create(datos))

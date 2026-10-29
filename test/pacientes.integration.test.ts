@@ -36,7 +36,13 @@ describe('Pacientes', () => {
 
     // Assert
     expect(respuesta.status).toBe(201)
-    expect(respuesta.body).toMatchObject({ nombre: 'Luna', nacimiento: '2024-05-02', alergias: '', duenioId: null, enAdopcion: true })
+    expect(respuesta.body).toMatchObject({
+      nombre: 'Luna',
+      nacimiento: '2024-05-02',
+      alergias: '',
+      duenioId: null,
+      enAdopcion: true,
+    })
   })
 
   it('rechaza un dueño con un email inválido', async () => {

@@ -25,7 +25,11 @@ export class GatoEntity {
   duenioId: number | null
 
   // Muchos gatos, un dueño. La foránea va del lado de los muchos.
-  @ManyToOne(() => DuenioEntity, (duenio) => duenio.gatos, { onDelete: 'RESTRICT' })
+  @ManyToOne(
+    () => DuenioEntity,
+    (duenio) => duenio.gatos,
+    { onDelete: 'RESTRICT' },
+  )
   @JoinColumn({ name: 'duenio_id' })
   duenio: Relation<DuenioEntity> | null
 }

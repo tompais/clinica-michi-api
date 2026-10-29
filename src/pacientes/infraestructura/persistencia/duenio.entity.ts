@@ -19,6 +19,9 @@ export class DuenioEntity {
   borradoEn: Date | null
 
   // Relation evita un problema de imports circulares entre entidades.
-  @OneToMany(() => GatoEntity, (gato) => gato.duenio)
+  @OneToMany(
+    () => GatoEntity,
+    (gato) => gato.duenio,
+  )
   gatos: Relation<GatoEntity[]>
 }

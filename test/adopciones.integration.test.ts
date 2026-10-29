@@ -26,8 +26,14 @@ describe('Adopciones', () => {
     // Assert
     expect(respuesta.status).toBe(201)
     const { body: gatos } = await clinica.http().get('/gatos')
-    expect(gatos.find((gato: { id: number }) => gato.id === COPITO)).toMatchObject({ duenioId: RITA, enAdopcion: false })
-    expect(clinica.eventos.publicar).toHaveBeenCalledWith(Topico.ADOPCION_REGISTRADA, { gatoId: COPITO, duenioId: RITA })
+    expect(gatos.find((gato: { id: number }) => gato.id === COPITO)).toMatchObject({
+      duenioId: RITA,
+      enAdopcion: false,
+    })
+    expect(clinica.eventos.publicar).toHaveBeenCalledWith(Topico.ADOPCION_REGISTRADA, {
+      gatoId: COPITO,
+      duenioId: RITA,
+    })
   })
 
   it('un gato no se adopta dos veces', async () => {

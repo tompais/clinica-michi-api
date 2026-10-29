@@ -6,7 +6,8 @@ import { Turno } from '../src/turnos/dominio/turno'
 // Unitario solo para la regla que tiene bordes finos: las 2 horas para cancelar.
 // Lo demás del turno ya lo cubren los tests de integración.
 const AHORA = new Date('2026-11-02T10:00:00Z')
-const turnoA = (fechaHora: string) => Turno.reservar({ gatoId: 1, fechaHora: new Date(fechaHora), motivo: 'Vacuna' }, AHORA)
+const turnoA = (fechaHora: string) =>
+  Turno.reservar({ gatoId: 1, fechaHora: new Date(fechaHora), motivo: 'Vacuna' }, AHORA)
 
 describe('Turno.cancelar', () => {
   it('devuelve un turno nuevo cancelado y deja el original como estaba', () => {

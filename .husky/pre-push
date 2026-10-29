@@ -1,0 +1,5 @@
+# Antes de cada push: que compile, que pase el lint y que no haya código sin usar.
+# Lo mismo corre en el CI: si acá pasa, allá también.
+bun run lint
+bun run typecheck
+bun run knip

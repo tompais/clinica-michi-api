@@ -27,13 +27,25 @@ Abrí [`ejemplos.http`](ejemplos.http) en WebStorm o en VS Code (extensión REST
 
 ## Comandos
 
-| Comando | Qué hace |
-|---|---|
-| `bun run start:dev` | Levanta la API y la reinicia cuando guardás un cambio |
-| `bun run test` | Corre todos los tests con Vitest |
-| `bun run typecheck` | Revisa los tipos de TypeScript |
-| `bun run job:recordatorios` | Corre el job de recordatorios una vez y termina |
-| `bun run migration:run` | Corre las migraciones pendientes contra `DATABASE_URL` |
+| Comando                     | Qué hace                                                               |
+| --------------------------- | ---------------------------------------------------------------------- |
+| `bun run start:dev`         | Levanta la API y la reinicia cuando guardás un cambio                  |
+| `bun run test`              | Corre todos los tests con Vitest                                       |
+| `bun run test:coverage`     | Corre los tests y falla si la cobertura baja de 80%                    |
+| `bun run lint`              | Formato y lint con Biome. `bun run lint:fix` arregla lo que puede solo |
+| `bun run typecheck`         | Revisa que compile, con `tsc`                                          |
+| `bun run knip`              | Busca archivos, exports y dependencias que nadie usa                   |
+| `bun run job:recordatorios` | Corre el job de recordatorios una vez y termina                        |
+| `bun run migration:run`     | Corre las migraciones pendientes contra `DATABASE_URL`                 |
+
+### Lo que te frena antes de subir algo
+
+Husky corre chequeos solo, con los hooks de git de [`.husky/`](.husky):
+
+- **pre-commit**: Biome revisa los archivos que estás por commitear.
+- **pre-push**: lint, `tsc` y Knip. Si algo falla, el push no sale.
+
+El CI corre lo mismo y además los tests con cobertura. Si pasa en tu compu, pasa en el CI.
 
 ## Cómo está ordenado
 
@@ -47,13 +59,13 @@ src/<módulo>/
 └── <módulo>.module.ts  Conecta cada puerto con su adaptador
 ```
 
-| Módulo | Qué hace |
-|---|---|
-| [`pacientes/`](src/pacientes) | Dueños y gatos. Alta, listado y baja lógica |
-| [`turnos/`](src/turnos) | Reservar y cancelar turnos, con sus reglas |
-| [`adopciones/`](src/adopciones) | Una transacción con FOR UPDATE y un evento a Pub/Sub |
-| [`recordatorios/`](src/recordatorios) | El job que corre todos los días a las 9 |
-| [`shared/`](src/shared) | Errores del dominio, base de datos, configuración HTTP y mensajería |
+| Módulo                                | Qué hace                                                            |
+| ------------------------------------- | ------------------------------------------------------------------- |
+| [`pacientes/`](src/pacientes)         | Dueños y gatos. Alta, listado y baja lógica                         |
+| [`turnos/`](src/turnos)               | Reservar y cancelar turnos, con sus reglas                          |
+| [`adopciones/`](src/adopciones)       | Una transacción con FOR UPDATE y un evento a Pub/Sub                |
+| [`recordatorios/`](src/recordatorios) | El job que corre todos los días a las 9                             |
+| [`shared/`](src/shared)               | Errores del dominio, base de datos, configuración HTTP y mensajería |
 
 La regla de oro: `dominio` no importa nada de Nest, TypeORM ni HTTP. Las flechas van siempre hacia adentro.
 
@@ -67,21 +79,21 @@ La regla de oro: `dominio` no importa nada de Nest, TypeORM ni HTTP. Las flechas
 
 ## Del juego al código
 
-| Mundo del Michi Dev Quest | Dónde mirarlo |
-|---|---|
-| La clínica web: endpoints, verbos y JSON | [`ejemplos.http`](ejemplos.http) |
-| TypeScript y código prolijo: enum con textos, valores por defecto | [`estado-turno.ts`](src/turnos/dominio/estado-turno.ts), [`crear-gato.dto.ts`](src/pacientes/infraestructura/http/dto/crear-gato.dto.ts) |
-| Node, Bun y las promesas | [`main.ts`](src/main.ts), [`Dockerfile`](Dockerfile), [`package.json`](package.json) |
-| NestJS: controller, caso de uso y module | [`gatos.controller.ts`](src/pacientes/infraestructura/http/gatos.controller.ts), [`pacientes.module.ts`](src/pacientes/pacientes.module.ts) |
-| Arquitectura: hexagonal y DDD | [`turnos/`](src/turnos) completo |
-| Módulos e inyección | [`turnos.module.ts`](src/turnos/turnos.module.ts), [`mensajeria.module.ts`](src/shared/mensajeria/mensajeria.module.ts) |
-| Interfaces en Nest con Symbol | [`turno.repository.ts`](src/turnos/dominio/turno.repository.ts), [`avisador.ts`](src/turnos/dominio/avisador.ts) |
-| Testing con Vitest | [`test/`](test) |
-| Bases de datos: claves, ON DELETE, borrado lógico y migraciones | [`migrations/`](src/shared/infraestructura/database/migrations), [`duenio.entity.ts`](src/pacientes/infraestructura/persistencia/duenio.entity.ts) |
-| SQL: transacciones y FOR UPDATE | [`typeorm-adopcion.repository.ts`](src/adopciones/infraestructura/persistencia/typeorm-adopcion.repository.ts) |
-| Docker y Cloud Run | [`Dockerfile`](Dockerfile), [`docker-compose.yml`](docker-compose.yml) |
-| Mensajes y jobs: Pub/Sub y cron | [`mensajeria/`](src/shared/mensajeria), [`enviar-recordatorios.caso-de-uso.ts`](src/recordatorios/aplicacion/enviar-recordatorios.caso-de-uso.ts) |
-| Del PR a producción | [`.github/workflows/`](.github/workflows) |
+| Mundo del Michi Dev Quest                                         | Dónde mirarlo                                                                                                                                      |
+| ----------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| La clínica web: endpoints, verbos y JSON                          | [`ejemplos.http`](ejemplos.http)                                                                                                                   |
+| TypeScript y código prolijo: enum con textos, valores por defecto | [`estado-turno.ts`](src/turnos/dominio/estado-turno.ts), [`crear-gato.dto.ts`](src/pacientes/infraestructura/http/dto/crear-gato.dto.ts)           |
+| Node, Bun y las promesas                                          | [`main.ts`](src/main.ts), [`Dockerfile`](Dockerfile), [`package.json`](package.json)                                                               |
+| NestJS: controller, caso de uso y module                          | [`gatos.controller.ts`](src/pacientes/infraestructura/http/gatos.controller.ts), [`pacientes.module.ts`](src/pacientes/pacientes.module.ts)        |
+| Arquitectura: hexagonal y DDD                                     | [`turnos/`](src/turnos) completo                                                                                                                   |
+| Módulos e inyección                                               | [`turnos.module.ts`](src/turnos/turnos.module.ts), [`mensajeria.module.ts`](src/shared/mensajeria/mensajeria.module.ts)                            |
+| Interfaces en Nest con Symbol                                     | [`turno.repository.ts`](src/turnos/dominio/turno.repository.ts), [`avisador.ts`](src/turnos/dominio/avisador.ts)                                   |
+| Testing con Vitest                                                | [`test/`](test)                                                                                                                                    |
+| Bases de datos: claves, ON DELETE, borrado lógico y migraciones   | [`migrations/`](src/shared/infraestructura/database/migrations), [`duenio.entity.ts`](src/pacientes/infraestructura/persistencia/duenio.entity.ts) |
+| SQL: transacciones y FOR UPDATE                                   | [`typeorm-adopcion.repository.ts`](src/adopciones/infraestructura/persistencia/typeorm-adopcion.repository.ts)                                     |
+| Docker y Cloud Run                                                | [`Dockerfile`](Dockerfile), [`docker-compose.yml`](docker-compose.yml)                                                                             |
+| Mensajes y jobs: Pub/Sub y cron                                   | [`mensajeria/`](src/shared/mensajeria), [`enviar-recordatorios.caso-de-uso.ts`](src/recordatorios/aplicacion/enviar-recordatorios.caso-de-uso.ts)  |
+| Del PR a producción                                               | [`.github/workflows/`](.github/workflows)                                                                                                          |
 
 ## Los tests
 
@@ -96,13 +108,13 @@ Seguimos el testing trophy: la mayoría son de integración y los unitarios qued
 
 Se llaman igual que en el equipo y piden los mismos campos.
 
-| Workflow | Cuándo corre | En este repo |
-|---|---|---|
-| **CI** | En cada push | Real: revisa tipos, corre los tests y sube la imagen al registry de GitHub con el SHA del commit |
-| **CI Release** | A mano, con patch, minor o major | Real: toma el último main con el CI en verde, crea el tag y el release, y le pone la versión a la imagen |
-| **CI - Deploy** | A mano | Simulado: valida los datos y muestra qué desplegaría, all-in |
-| **CI - Deploy (canary / blue-green)** | A mano | Simulado: muestra cómo se repartiría el tráfico |
-| **Migrate** | A mano | Simulado: muestra qué migraciones correría |
+| Workflow                              | Cuándo corre                     | En este repo                                                                                                                           |
+| ------------------------------------- | -------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| **CI**                                | En cada push                     | Real: revisa lint, tipos y código sin usar, corre los tests con cobertura y sube la imagen al registry de GitHub con el SHA del commit |
+| **CI Release**                        | A mano, con patch, minor o major | Real: toma el último main con el CI en verde, crea el tag y el release, y le pone la versión a la imagen                               |
+| **CI - Deploy**                       | A mano                           | Simulado: valida los datos y muestra qué desplegaría, all-in                                                                           |
+| **CI - Deploy (canary / blue-green)** | A mano                           | Simulado: muestra cómo se repartiría el tráfico                                                                                        |
+| **Migrate**                           | A mano                           | Simulado: muestra qué migraciones correría                                                                                             |
 
 Los deploys y el migrate son simulados porque este repo no tiene una nube de verdad atrás. En el equipo, esos pasos despliegan en Cloud Run y corren las migraciones contra la base de cada ambiente.
 
@@ -115,5 +127,6 @@ Los deploys y el migrate son simulados porque este repo no tiene una nube de ver
 - Nada de tipos anónimos: lo que entra y sale por HTTP es una clase DTO.
 - Valores por defecto en vez de `undefined`. Los pocos `null` tienen un comentario que dice qué significan.
 - `enum` con textos para valores finitos, como `EstadoTurno` o `Topico`.
+- Biome para formato y lint, Knip para lo que sobra y cobertura mínima de 80%.
 - SOLID, KISS, DRY y YAGNI: clases chicas con una sola tarea, nada que no se use todavía.
 - Ramas con su tipo adelante (`feature/`, `fix/`, `refactor/`) y commits con Conventional Commits.

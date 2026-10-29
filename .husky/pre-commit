@@ -1,0 +1,2 @@
+# Antes de cada commit: formato y lint de lo que estás por commitear.
+bunx biome check --staged --no-errors-on-unmatched

@@ -4,7 +4,7 @@ WORKDIR /app
 
 # Primero las dependencias, así Docker reusa esta capa si no cambiaron.
 COPY package.json bun.lock ./
-RUN bun install --frozen-lockfile --production
+RUN bun install --frozen-lockfile --production --ignore-scripts
 
 # Después el código. Bun corre TypeScript directo, sin compilar.
 COPY tsconfig.json ./

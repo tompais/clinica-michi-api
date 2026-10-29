@@ -1,0 +1,6 @@
+{
+  "$schema": "https://unpkg.com/knip@6/schema-jsonc.json",
+  // data-source.ts no lo importa nadie: lo usa el CLI de TypeORM para correr las migraciones.
+  "entry": ["src/shared/infraestructura/database/data-source.ts"],
+  "project": ["src/**/*.ts", "test/**/*.ts"]
+}
