@@ -2,22 +2,16 @@ import { Turno } from '../../dominio/turno'
 import { TurnoEntity } from './turno.entity'
 
 // Traduce entre la entidad del dominio y la fila de la base, en los dos sentidos.
-export const TurnoMapper = {
-  aDominio: (fila: TurnoEntity): Turno =>
-    Turno.reconstruir({
-      id: fila.id,
-      gatoId: fila.gatoId,
-      fechaHora: fila.fechaHora,
-      motivo: fila.motivo,
-      estado: fila.estado,
-    }),
+export function turnoADominio(fila: TurnoEntity): Turno {
+  return Turno.reconstruir(fila)
+}
 
-  aEntity: (turno: Turno): TurnoEntity =>
-    Object.assign(new TurnoEntity(), {
-      id: turno.id,
-      gatoId: turno.gatoId,
-      fechaHora: turno.fechaHora,
-      motivo: turno.motivo,
-      estado: turno.estado,
-    }),
-} as const
+export function turnoAEntity(turno: Turno): TurnoEntity {
+  const fila = new TurnoEntity()
+  fila.id = turno.id
+  fila.gatoId = turno.gatoId
+  fila.fechaHora = turno.fechaHora
+  fila.motivo = turno.motivo
+  fila.estado = turno.estado
+  return fila
+}

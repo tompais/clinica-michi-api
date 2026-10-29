@@ -74,7 +74,7 @@ La regla de oro: `dominio` no importa nada de Nest, TypeORM ni HTTP. Las flechas
 1. [`TurnosController`](src/turnos/infraestructura/http/turnos.controller.ts) recibe el pedido. El [`ReservarTurnoRequestBody`](src/turnos/infraestructura/http/reservar-turno.request-body.ts) lo valida.
 2. Llama a [`ReservarTurnoCasoDeUso`](src/turnos/aplicacion/reservar-turno.caso-de-uso.ts), que pide tres puertos por su Symbol: `TURNO_REPOSITORY`, `GATO_REPOSITORY` y `AVISADOR`.
 3. La entidad [`Turno`](src/turnos/dominio/turno.ts) aplica sus reglas: no se reserva en el pasado.
-4. [`turnos.module.ts`](src/turnos/turnos.module.ts) decide quién ocupa cada puerto: `TypeOrmTurnoRepository` guarda en Postgres y `MailAvisador` avisa al dueño.
+4. [`turnos.module.ts`](src/turnos/turnos.module.ts) decide quién ocupa cada puerto: `TurnoRepository` guarda en Postgres y `MailAvisador` avisa al dueño.
 5. El controller devuelve un [`TurnoResponse`](src/turnos/infraestructura/http/turno.response.ts).
 
 ## Del juego al código
@@ -90,7 +90,7 @@ La regla de oro: `dominio` no importa nada de Nest, TypeORM ni HTTP. Las flechas
 | Interfaces en Nest con Symbol                                     | [`turno.repository.ts`](src/turnos/dominio/turno.repository.ts), [`avisador.ts`](src/turnos/dominio/avisador.ts)                                       |
 | Testing con Vitest                                                | [`test/`](test)                                                                                                                                        |
 | Bases de datos: claves, ON DELETE, borrado lógico y migraciones   | [`migrations/`](src/shared/infraestructura/database/migrations), [`duenio.entity.ts`](src/pacientes/infraestructura/persistencia/duenio.entity.ts)     |
-| SQL: transacciones y FOR UPDATE                                   | [`typeorm-adopcion.repository.ts`](src/adopciones/infraestructura/persistencia/typeorm-adopcion.repository.ts)                                         |
+| SQL: transacciones y FOR UPDATE                                   | [`adopcion.repository.ts`](src/adopciones/infraestructura/persistencia/adopcion.repository.ts)                                                         |
 | Docker y Cloud Run                                                | [`Dockerfile`](Dockerfile), [`docker-compose.yml`](docker-compose.yml)                                                                                 |
 | Mensajes y jobs: Pub/Sub y cron                                   | [`mensajeria/`](src/shared/mensajeria), [`enviar-recordatorios.caso-de-uso.ts`](src/recordatorios/aplicacion/enviar-recordatorios.caso-de-uso.ts)      |
 | Del PR a producción                                               | [`.github/workflows/`](.github/workflows)                                                                                                              |
@@ -101,7 +101,7 @@ Seguimos el testing trophy: la mayoría son de integración y los unitarios qued
 
 - `*.integration.test.ts` levanta la app entera con la base en memoria y le pega por HTTP. Solo se reemplazan el mail y Pub/Sub, que salen del sistema. Ejemplo: [`turnos.integration.test.ts`](test/turnos.integration.test.ts).
 - `*.test.ts` es unitario. Hay uno solo, para la regla de las 2 horas para cancelar: [`turno.test.ts`](test/turno.test.ts).
-- [`test/support/`](test/support) arma la app de prueba y deja la base limpia antes de cada test.
+- [`test/support/`](test/support) arma la app de prueba, deja la base limpia antes de cada test y trae los pedidos que se repiten.
 - Todos siguen AAA: Arrange, Act y Assert, marcados con un comentario.
 
 ## Los workflows
@@ -124,10 +124,11 @@ Los deploys y el migrate son simulados porque este repo no tiene una nube de ver
 - Entidades del dominio inmutables: cambiar algo devuelve una instancia nueva (`turno.cancelar(ahora)`).
 - Entidades de base en archivos `*.entity.ts`, con nombre `GatoEntity`. Un mapper traduce entre las dos.
 - Repositorios tipados: `Repository<GatoEntity>`. Nada de SQL suelto en el código de la app.
-- Nada de tipos anónimos: lo que entra y sale por HTTP es una clase con su sufijo. `CrearGatoRequestBody` para el cuerpo, `ListarGatosQuery` para los query params y `GatoResponse` para lo que vuelve. El archivo lleva el mismo sufijo: `crear-gato.request-body.ts`.
+- El puerto lleva la `I` y el adaptador no: `ITurnoRepository` en `dominio/`, `TurnoRepository` en `infraestructura/persistencia/`.
+- Nada de tipos ni objetos anónimos: siempre una clase o una interfaz con nombre, como el evento `AdopcionRegistrada` o `ErrorResponse`. Lo que entra y sale por HTTP es una clase con su sufijo. `CrearGatoRequestBody` para el cuerpo, `ListarGatosQuery` para los query params y `GatoResponse` para lo que vuelve. El archivo lleva el mismo sufijo: `crear-gato.request-body.ts`.
 - Interfaces con el prefijo `I`: `ITurnoRepository`, `IAvisador`, `IDatosDeTurno`.
 - Valores por defecto en vez de `undefined`. Los pocos `null` tienen un comentario que dice qué significan.
 - `enum` con textos para valores finitos, como `EstadoTurno` o `Topico`.
 - Biome para formato y lint, Knip para lo que sobra y cobertura mínima de 80%.
-- SOLID, KISS, DRY y YAGNI: clases chicas con una sola tarea, nada que no se use todavía.
+- SOLID, KISS, DRY y YAGNI: clases chicas con una sola tarea, nada que no se use todavía. Lo que se repite va a un solo lugar, como [`fechas.ts`](src/shared/dominio/fechas.ts) o [`test/support/`](test/support).
 - Ramas con su tipo adelante (`feature/`, `fix/`, `refactor/`) y commits con Conventional Commits.

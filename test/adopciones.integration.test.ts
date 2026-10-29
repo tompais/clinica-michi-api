@@ -1,23 +1,15 @@
-import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest'
-import { Topico } from '../src/shared/mensajeria/dominio/topico'
-import { type AppDePrueba, COPITO, crearAppDePrueba, NUBE, RITA } from './support/app-de-prueba'
+import { describe, expect, it } from 'vitest'
+import type { IDatosDeAdopcion } from '../src/adopciones/dominio/adopcion'
+import { AdopcionRegistrada } from '../src/adopciones/dominio/adopcion-registrada.evento'
+import { COPITO, NUBE, RITA, usarClinicaDePrueba } from './support/app-de-prueba'
 
 describe('Adopciones', () => {
-  let clinica: AppDePrueba
+  const clinica = usarClinicaDePrueba()
 
-  beforeAll(async () => {
-    clinica = await crearAppDePrueba()
-  })
-
-  beforeEach(async () => {
-    await clinica.reiniciar()
-  })
-
-  afterAll(async () => {
-    await clinica.app.close()
-  })
-
-  const adoptar = (gatoId: number, duenioId: number) => clinica.http().post('/adopciones').send({ gatoId, duenioId })
+  function adoptar(gatoId: number, duenioId: number) {
+    const pedido: IDatosDeAdopcion = { gatoId, duenioId }
+    return clinica().adoptar(pedido)
+  }
 
   it('Copito encuentra casa: queda adoptado y se publica el evento', async () => {
     // Act
@@ -25,15 +17,8 @@ describe('Adopciones', () => {
 
     // Assert
     expect(respuesta.status).toBe(201)
-    const { body: gatos } = await clinica.http().get('/gatos')
-    expect(gatos.find((gato: { id: number }) => gato.id === COPITO)).toMatchObject({
-      duenioId: RITA,
-      enAdopcion: false,
-    })
-    expect(clinica.eventos.publicar).toHaveBeenCalledWith(Topico.ADOPCION_REGISTRADA, {
-      gatoId: COPITO,
-      duenioId: RITA,
-    })
+    expect(await clinica().buscarGato(COPITO)).toMatchObject({ duenioId: RITA, enAdopcion: false })
+    expect(clinica().eventos.publicar).toHaveBeenCalledWith(new AdopcionRegistrada(COPITO, RITA))
   })
 
   it('un gato no se adopta dos veces', async () => {
@@ -53,7 +38,7 @@ describe('Adopciones', () => {
 
     // Assert
     expect(respuesta.status).toBe(422)
-    expect(clinica.eventos.publicar).not.toHaveBeenCalled()
+    expect(clinica().eventos.publicar).not.toHaveBeenCalled()
   })
 
   it('responde 404 si el dueño no existe, y Copito sigue en adopción', async () => {
@@ -62,7 +47,6 @@ describe('Adopciones', () => {
 
     // Assert
     expect(respuesta.status).toBe(404)
-    const { body: gatos } = await clinica.http().get('/gatos')
-    expect(gatos.find((gato: { id: number }) => gato.id === COPITO).enAdopcion).toBe(true)
+    expect((await clinica().buscarGato(COPITO))?.enAdopcion).toBe(true)
   })
 })

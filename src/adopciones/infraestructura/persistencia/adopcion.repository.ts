@@ -3,7 +3,7 @@ import { DataSource, type EntityManager } from 'typeorm'
 import type { Gato } from '../../../pacientes/dominio/gato'
 import { DuenioEntity } from '../../../pacientes/infraestructura/persistencia/duenio.entity'
 import { GatoEntity } from '../../../pacientes/infraestructura/persistencia/gato.entity'
-import { PacientesMapper } from '../../../pacientes/infraestructura/persistencia/pacientes.mapper'
+import { gatoADominio, gatoAEntity } from '../../../pacientes/infraestructura/persistencia/gato.mapper'
 import { NoEncontrado } from '../../../shared/dominio/errores'
 import { Adopcion, type IDatosDeAdopcion } from '../../dominio/adopcion'
 import type { IAdopcionRepository } from '../../dominio/adopcion.repository'
@@ -12,7 +12,7 @@ import { AdopcionEntity } from './adopcion.entity'
 // Adaptador: la adopción entera corre en una transacción.
 // La regla de quién se puede adoptar la decide el dominio (Gato.adoptar). Acá solo se guarda.
 @Injectable()
-export class TypeOrmAdopcionRepository implements IAdopcionRepository {
+export class AdopcionRepository implements IAdopcionRepository {
   constructor(private readonly dataSource: DataSource) {}
 
   registrar(datos: IDatosDeAdopcion): Promise<Adopcion> {
@@ -21,9 +21,7 @@ export class TypeOrmAdopcionRepository implements IAdopcionRepository {
       await this.asegurarQueExisteElDuenio(manager, datos.duenioId)
 
       const adoptado = gato.adoptar(datos.duenioId)
-      await manager
-        .getRepository(GatoEntity)
-        .update(adoptado.id, { duenioId: adoptado.duenioId, adoptado: adoptado.adoptado })
+      await manager.getRepository(GatoEntity).save(gatoAEntity(adoptado))
 
       const adopciones = manager.getRepository(AdopcionEntity)
       const fila = await adopciones.save(adopciones.create(datos))
@@ -34,12 +32,12 @@ export class TypeOrmAdopcionRepository implements IAdopcionRepository {
   // FOR UPDATE: si dos personas adoptan al mismo gato a la vez, la segunda espera a que termine la primera.
   private async bloquearGato(manager: EntityManager, id: number): Promise<Gato> {
     const fila = await manager.getRepository(GatoEntity).findOne({ where: { id }, lock: { mode: 'pessimistic_write' } })
-    if (!fila) throw new NoEncontrado(`No existe el gato ${id}`)
-    return PacientesMapper.gatoADominio(fila)
+    if (!fila) throw new NoEncontrado('el gato', id)
+    return gatoADominio(fila)
   }
 
   private async asegurarQueExisteElDuenio(manager: EntityManager, id: number): Promise<void> {
     const existe = await manager.getRepository(DuenioEntity).existsBy({ id })
-    if (!existe) throw new NoEncontrado(`No existe el dueño ${id}`)
+    if (!existe) throw new NoEncontrado('el dueño', id)
   }
 }

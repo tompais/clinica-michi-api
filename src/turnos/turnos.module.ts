@@ -8,7 +8,7 @@ import { TURNO_REPOSITORY } from './dominio/turno.repository'
 import { MailAvisador } from './infraestructura/avisos/mail.avisador'
 import { TurnosController } from './infraestructura/http/turnos.controller'
 import { TurnoEntity } from './infraestructura/persistencia/turno.entity'
-import { TypeOrmTurnoRepository } from './infraestructura/persistencia/typeorm-turno.repository'
+import { TurnoRepository } from './infraestructura/persistencia/turno.repository'
 
 // El módulo conecta cada puerto con su adaptador. Cambiar de adaptador es cambiar una línea acá.
 @Module({
@@ -17,7 +17,7 @@ import { TypeOrmTurnoRepository } from './infraestructura/persistencia/typeorm-t
   providers: [
     ReservarTurnoCasoDeUso,
     CancelarTurnoCasoDeUso,
-    { provide: TURNO_REPOSITORY, useClass: TypeOrmTurnoRepository },
+    { provide: TURNO_REPOSITORY, useClass: TurnoRepository },
     { provide: AVISADOR, useClass: MailAvisador },
   ],
   // Recordatorios usa los mismos puertos.

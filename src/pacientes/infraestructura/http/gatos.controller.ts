@@ -14,7 +14,7 @@ export class GatosController {
 
   @Get()
   async listar(@Query() query: ListarGatosQuery): Promise<readonly GatoResponse[]> {
-    const gatos = await this.listarGatos.ejecutar({ soloEnAdopcion: query.enAdopcion })
+    const gatos = await this.listarGatos.ejecutar(query)
     return gatos.map(GatoResponse.desde)
   }
 

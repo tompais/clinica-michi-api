@@ -1,13 +1,13 @@
 import { Injectable, Logger } from '@nestjs/common'
+import type { IEventoDeDominio } from '../dominio/evento-de-dominio'
 import type { IEventoPublisher } from '../dominio/evento-publisher'
-import type { Topico } from '../dominio/topico'
 
 // Adaptador para tu compu: en vez de publicar, escribe el evento en la consola.
 @Injectable()
 export class ConsolaPublisher implements IEventoPublisher {
   private readonly logger = new Logger('Eventos')
 
-  async publicar(topico: Topico, datos: Readonly<Record<string, unknown>>): Promise<void> {
-    this.logger.log(`📨 ${topico}: ${JSON.stringify(datos)}`)
+  async publicar(evento: IEventoDeDominio): Promise<void> {
+    this.logger.log(`📨 ${evento.topico}: ${JSON.stringify(evento)}`)
   }
 }

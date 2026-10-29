@@ -6,21 +6,21 @@ import { EstadoTurno } from '../../dominio/estado-turno'
 import type { Turno } from '../../dominio/turno'
 import type { ITurnoRepository } from '../../dominio/turno.repository'
 import { TurnoEntity } from './turno.entity'
-import { TurnoMapper } from './turno.mapper'
+import { turnoADominio, turnoAEntity } from './turno.mapper'
 
 // Adaptador: implementa el puerto ITurnoRepository con un repositorio tipado de TypeORM.
 @Injectable()
-export class TypeOrmTurnoRepository implements ITurnoRepository {
+export class TurnoRepository implements ITurnoRepository {
   constructor(@InjectRepository(TurnoEntity) private readonly repo: Repository<TurnoEntity>) {}
 
   async guardar(turno: Turno): Promise<void> {
-    await this.repo.save(TurnoMapper.aEntity(turno))
+    await this.repo.save(turnoAEntity(turno))
   }
 
   async obtener(id: string): Promise<Turno> {
     const fila = await this.repo.findOneBy({ id })
-    if (!fila) throw new NoEncontrado(`No existe el turno ${id}`)
-    return TurnoMapper.aDominio(fila)
+    if (!fila) throw new NoEncontrado('el turno', id)
+    return turnoADominio(fila)
   }
 
   estaOcupado(fechaHora: Date): Promise<boolean> {
@@ -32,6 +32,6 @@ export class TypeOrmTurnoRepository implements ITurnoRepository {
       where: { fechaHora: And(MoreThanOrEqual(desde), LessThan(hasta)) },
       order: { fechaHora: 'ASC' },
     })
-    return filas.map(TurnoMapper.aDominio)
+    return filas.map(turnoADominio)
   }
 }

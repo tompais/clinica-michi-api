@@ -1,7 +1,7 @@
 import type { Gato, IDatosDeGato } from './gato'
 
 export interface IFiltroDeGatos {
-  readonly soloEnAdopcion: boolean
+  readonly enAdopcion: boolean
 }
 
 // Puerto: lo que el dominio necesita del archivo de gatos.

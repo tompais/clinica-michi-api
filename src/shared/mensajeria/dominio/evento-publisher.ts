@@ -1,9 +1,9 @@
-import type { Topico } from './topico'
+import type { IEventoDeDominio } from './evento-de-dominio'
 
 // Puerto: el puesto de "alguien que publica eventos".
 // A quien lo usa no le importa si es Pub/Sub o la consola.
 export interface IEventoPublisher {
-  publicar(topico: Topico, datos: Readonly<Record<string, unknown>>): Promise<void>
+  publicar(evento: IEventoDeDominio): Promise<void>
 }
 
 // La interfaz se borra al compilar. El Symbol queda: es la credencial para inyectarla.

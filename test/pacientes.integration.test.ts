@@ -1,62 +1,50 @@
-import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest'
+import { describe, expect, it } from 'vitest'
+import type { IDatosDeDuenio } from '../src/pacientes/dominio/duenio'
+import type { IDatosDeGato } from '../src/pacientes/dominio/gato'
+import type { GatoResponse } from '../src/pacientes/infraestructura/http/gato.response'
 import { DuenioEntity } from '../src/pacientes/infraestructura/persistencia/duenio.entity'
-import { type AppDePrueba, COPITO, crearAppDePrueba, PANCHO } from './support/app-de-prueba'
+import { COPITO, PANCHO, usarClinicaDePrueba } from './support/app-de-prueba'
 
 describe('Pacientes', () => {
-  let clinica: AppDePrueba
-
-  beforeAll(async () => {
-    clinica = await crearAppDePrueba()
-  })
-
-  beforeEach(async () => {
-    await clinica.reiniciar()
-  })
-
-  afterAll(async () => {
-    await clinica.app.close()
-  })
+  const clinica = usarClinicaDePrueba()
 
   it('lista los gatos ordenados por nombre y marca los que están en adopción', async () => {
     // Act
-    const respuesta = await clinica.http().get('/gatos')
+    const gatos = await clinica().listarGatos()
 
     // Assert
-    expect(respuesta.status).toBe(200)
-    expect(respuesta.body.map((gato: { nombre: string }) => gato.nombre)).toEqual(['Copito', 'Nube', 'Tom'])
-    expect(respuesta.body[0]).toMatchObject({ id: COPITO, duenioId: null, enAdopcion: true })
+    expect(gatos.map((gato) => gato.nombre)).toEqual(['Copito', 'Nube', 'Tom'])
+    expect(gatos[0]).toMatchObject({ id: COPITO, duenioId: null, enAdopcion: true })
   })
 
   it('filtra los gatos en adopción con un query param', async () => {
     // Act
-    const respuesta = await clinica.http().get('/gatos').query({ enAdopcion: 'true' })
+    const respuesta = await clinica().http().get('/gatos?enAdopcion=true')
 
     // Assert
     expect(respuesta.status).toBe(200)
-    expect(respuesta.body.map((gato: { id: number }) => gato.id)).toEqual([COPITO])
+    const gatos: readonly GatoResponse[] = respuesta.body
+    expect(gatos.map((gato) => gato.id)).toEqual([COPITO])
   })
 
   it('crea un gato con valores por defecto cuando no mandan alergias ni dueño', async () => {
     // Arrange
-    const gatoNuevo = { nombre: 'Luna', nacimiento: '2024-05-02' }
+    const gatoNuevo: Partial<IDatosDeGato> = { nombre: 'Luna', nacimiento: '2024-05-02' }
 
     // Act
-    const respuesta = await clinica.http().post('/gatos').send(gatoNuevo)
+    const respuesta = await clinica().http().post('/gatos').send(gatoNuevo)
 
     // Assert
     expect(respuesta.status).toBe(201)
-    expect(respuesta.body).toMatchObject({
-      nombre: 'Luna',
-      nacimiento: '2024-05-02',
-      alergias: '',
-      duenioId: null,
-      enAdopcion: true,
-    })
+    expect(respuesta.body).toMatchObject({ nombre: 'Luna', alergias: '', duenioId: null, enAdopcion: true })
   })
 
   it('rechaza un dueño con un email inválido', async () => {
+    // Arrange
+    const duenio: IDatosDeDuenio = { nombre: 'Ana', email: 'no-es-un-mail' }
+
     // Act
-    const respuesta = await clinica.http().post('/duenios').send({ nombre: 'Ana', email: 'no-es-un-mail' })
+    const respuesta = await clinica().http().post('/duenios').send(duenio)
 
     // Assert
     expect(respuesta.status).toBe(400)
@@ -64,11 +52,11 @@ describe('Pacientes', () => {
 
   it('da de baja a un dueño con borrado lógico: la fila queda, con fecha de baja', async () => {
     // Act
-    const respuesta = await clinica.http().delete(`/duenios/${PANCHO}`)
+    const respuesta = await clinica().http().delete(`/duenios/${PANCHO}`)
 
     // Assert
     expect(respuesta.status).toBe(204)
-    const duenios = clinica.db.getRepository(DuenioEntity)
+    const duenios = clinica().db.getRepository(DuenioEntity)
     expect(await duenios.findOneBy({ id: PANCHO })).toBeNull()
     const borrado = await duenios.findOne({ where: { id: PANCHO }, withDeleted: true })
     expect(borrado?.borradoEn).toBeInstanceOf(Date)
@@ -76,7 +64,7 @@ describe('Pacientes', () => {
 
   it('responde 404 al dar de baja un dueño que no existe', async () => {
     // Act
-    const respuesta = await clinica.http().delete('/duenios/999')
+    const respuesta = await clinica().http().delete('/duenios/999')
 
     // Assert
     expect(respuesta.status).toBe(404)
@@ -84,7 +72,7 @@ describe('Pacientes', () => {
 
   it('la base no deja borrar de verdad a un dueño que tiene gatos (ON DELETE RESTRICT)', async () => {
     // Arrange
-    const duenios = clinica.db.getRepository(DuenioEntity)
+    const duenios = clinica().db.getRepository(DuenioEntity)
 
     // Act
     const borrado = duenios.delete(PANCHO)
