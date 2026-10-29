@@ -1,11 +1,10 @@
 import { Column, Entity, Index, JoinColumn, ManyToOne, PrimaryColumn, type Relation } from 'typeorm'
 import { GatoEntity } from '../../../pacientes/infraestructura/persistencia/gato.entity'
 import { EstadoTurno } from '../../dominio/estado-turno'
-import type { ITurnoGuardado } from '../../dominio/turno'
 
 // Cómo se guarda un turno en la tabla turnos.
 @Entity('turnos')
-export class TurnoEntity implements ITurnoGuardado {
+export class TurnoEntity {
   // El id lo genera el dominio al reservar, por eso no es autoincremental.
   @PrimaryColumn('uuid')
   id: string

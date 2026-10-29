@@ -126,7 +126,8 @@ Los deploys y el migrate son simulados porque este repo no tiene una nube de ver
 - Repositorios tipados: `Repository<GatoEntity>`. Nada de SQL suelto en el código de la app.
 - El puerto lleva la `I` y el adaptador no: `ITurnoRepository` en `dominio/`, `TurnoRepository` en `infraestructura/persistencia/`.
 - Nada de tipos ni objetos anónimos: siempre una clase o una interfaz con nombre, como el evento `AdopcionRegistrada` o `ErrorResponse`. Lo que entra y sale por HTTP es una clase con su sufijo. `CrearGatoRequestBody` para el cuerpo, `ListarGatosQuery` para los query params y `GatoResponse` para lo que vuelve. El archivo lleva el mismo sufijo: `crear-gato.request-body.ts`.
-- Interfaces con el prefijo `I`: `ITurnoRepository`, `IAvisador`, `IDatosDeTurno`.
+- Interfaces solo para contratos con métodos, como los puertos, y con el prefijo `I`: `ITurnoRepository`, `IAvisador`.
+- Datos que comparten varias clases: una clase abstracta. `Turno` extiende [`DatosDeTurno`](src/turnos/dominio/turno.ts) y el evento `AdopcionRegistrada` extiende `EventoDeDominio`.
 - Valores por defecto en vez de `undefined`. Los pocos `null` tienen un comentario que dice qué significan.
 - `enum` con textos para valores finitos, como `EstadoTurno` o `Topico`.
 - Biome para formato y lint, Knip para lo que sobra y cobertura mínima de 80%.

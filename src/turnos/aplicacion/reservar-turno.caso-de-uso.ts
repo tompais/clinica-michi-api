@@ -2,7 +2,7 @@ import { Inject, Injectable } from '@nestjs/common'
 import { GATO_REPOSITORY, type IGatoRepository } from '../../pacientes/dominio/gato.repository'
 import { ReglaDeNegocioRota } from '../../shared/dominio/errores'
 import { AVISADOR, type IAvisador } from '../dominio/avisador'
-import { type IDatosDeTurno, Turno } from '../dominio/turno'
+import { type DatosDeTurno, Turno } from '../dominio/turno'
 import { type ITurnoRepository, TURNO_REPOSITORY } from '../dominio/turno.repository'
 
 // Caso de uso: arma el paso a paso con piezas del dominio. Pide los puertos por su Symbol.
@@ -14,7 +14,7 @@ export class ReservarTurnoCasoDeUso {
     @Inject(AVISADOR) private readonly avisador: IAvisador,
   ) {}
 
-  async ejecutar(datos: IDatosDeTurno): Promise<Turno> {
+  async ejecutar(datos: DatosDeTurno): Promise<Turno> {
     const turno = Turno.reservar(datos, new Date())
     await this.gatos.obtener(turno.gatoId)
     await this.asegurarHorarioLibre(turno.fechaHora)

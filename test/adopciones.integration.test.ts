@@ -1,13 +1,13 @@
 import { describe, expect, it } from 'vitest'
-import type { IDatosDeAdopcion } from '../src/adopciones/dominio/adopcion'
 import { AdopcionRegistrada } from '../src/adopciones/dominio/adopcion-registrada.evento'
+import type { AdoptarGatoRequestBody } from '../src/adopciones/infraestructura/http/adoptar-gato.request-body'
 import { COPITO, NUBE, RITA, usarClinicaDePrueba } from './support/app-de-prueba'
 
 describe('Adopciones', () => {
   const clinica = usarClinicaDePrueba()
 
   function adoptar(gatoId: number, duenioId: number) {
-    const pedido: IDatosDeAdopcion = { gatoId, duenioId }
+    const pedido: AdoptarGatoRequestBody = { gatoId, duenioId }
     return clinica().adoptar(pedido)
   }
 

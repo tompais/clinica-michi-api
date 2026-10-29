@@ -5,7 +5,7 @@ import { DuenioEntity } from '../../../pacientes/infraestructura/persistencia/du
 import { GatoEntity } from '../../../pacientes/infraestructura/persistencia/gato.entity'
 import { gatoADominio, gatoAEntity } from '../../../pacientes/infraestructura/persistencia/gato.mapper'
 import { NoEncontrado } from '../../../shared/dominio/errores'
-import { Adopcion, type IDatosDeAdopcion } from '../../dominio/adopcion'
+import { Adopcion, type DatosDeAdopcion } from '../../dominio/adopcion'
 import type { IAdopcionRepository } from '../../dominio/adopcion.repository'
 import { AdopcionEntity } from './adopcion.entity'
 
@@ -15,7 +15,7 @@ import { AdopcionEntity } from './adopcion.entity'
 export class AdopcionRepository implements IAdopcionRepository {
   constructor(private readonly dataSource: DataSource) {}
 
-  registrar(datos: IDatosDeAdopcion): Promise<Adopcion> {
+  registrar(datos: DatosDeAdopcion): Promise<Adopcion> {
     return this.dataSource.transaction(async (manager) => {
       const gato = await this.bloquearGato(manager, datos.gatoId)
       await this.asegurarQueExisteElDuenio(manager, datos.duenioId)

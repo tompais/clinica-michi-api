@@ -3,7 +3,7 @@ import { TurnoEntity } from './turno.entity'
 
 // Traduce entre la entidad del dominio y la fila de la base, en los dos sentidos.
 export function turnoADominio(fila: TurnoEntity): Turno {
-  return Turno.reconstruir(fila)
+  return Turno.reconstruir(fila.id, fila, fila.estado)
 }
 
 export function turnoAEntity(turno: Turno): TurnoEntity {

@@ -1,7 +1,6 @@
 import { IsDateString, IsInt, IsNotEmpty, IsOptional, IsString } from 'class-validator'
-import type { IDatosDeGato } from '../../dominio/gato'
 
-export class CrearGatoRequestBody implements IDatosDeGato {
+export class CrearGatoRequestBody {
   @IsString()
   @IsNotEmpty()
   readonly nombre: string

@@ -5,36 +5,35 @@ import { EstadoTurno } from './estado-turno'
 
 const HORAS_MINIMAS_PARA_CANCELAR = 2
 
-export interface IDatosDeTurno {
-  readonly gatoId: number
-  readonly fechaHora: Date
-  readonly motivo: string
-}
-
-// Un turno ya guardado: además de sus datos, tiene id y estado.
-export interface ITurnoGuardado extends IDatosDeTurno {
-  readonly id: string
-  readonly estado: EstadoTurno
+// Los datos de un turno. Abstracta: no se crea sola, la comparten las clases que tienen estos datos.
+export abstract class DatosDeTurno {
+  constructor(
+    readonly gatoId: number,
+    readonly fechaHora: Date,
+    readonly motivo: string,
+  ) {}
 }
 
 // Entidad del dominio: un turno con sus reglas. No sabe nada de HTTP ni de la base.
 // Inmutable: cancelar no lo modifica, devuelve un turno nuevo con el cambio.
-export class Turno {
+export class Turno extends DatosDeTurno {
   private constructor(
     readonly id: string,
-    readonly gatoId: number,
-    readonly fechaHora: Date,
-    readonly motivo: string,
+    gatoId: number,
+    fechaHora: Date,
+    motivo: string,
     readonly estado: EstadoTurno,
-  ) {}
+  ) {
+    super(gatoId, fechaHora, motivo)
+  }
 
-  static reservar(datos: IDatosDeTurno, ahora: Date): Turno {
+  static reservar(datos: DatosDeTurno, ahora: Date): Turno {
     if (datos.fechaHora <= ahora) throw new ReglaDeNegocioRota('No se puede reservar un turno en el pasado')
     return new Turno(randomUUID(), datos.gatoId, datos.fechaHora, datos.motivo, EstadoTurno.PENDIENTE)
   }
 
-  static reconstruir(datos: ITurnoGuardado): Turno {
-    return new Turno(datos.id, datos.gatoId, datos.fechaHora, datos.motivo, datos.estado)
+  static reconstruir(id: string, datos: DatosDeTurno, estado: EstadoTurno): Turno {
+    return new Turno(id, datos.gatoId, datos.fechaHora, datos.motivo, estado)
   }
 
   get estaCancelado(): boolean {

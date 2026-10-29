@@ -1,33 +1,32 @@
 import { ReglaDeNegocioRota } from '../../shared/dominio/errores'
 
-export interface IDatosDeGato {
-  readonly nombre: string
-  readonly nacimiento: string
-  readonly alergias: string
-  // null a propósito: un gato sin dueño está en adopción.
-  readonly duenioId: number | null
-}
-
-// Un gato ya guardado: además de sus datos, tiene id y sabe si fue adoptado.
-export interface IGatoGuardado extends IDatosDeGato {
-  readonly id: number
-  readonly adoptado: boolean
+// Los datos de un gato. Abstracta: no se crea sola, la comparten las clases que tienen estos datos.
+export abstract class DatosDeGato {
+  constructor(
+    readonly nombre: string,
+    readonly nacimiento: string,
+    readonly alergias: string,
+    // null a propósito: un gato sin dueño está en adopción.
+    readonly duenioId: number | null,
+  ) {}
 }
 
 // Entidad del dominio: un gato con su regla de adopción.
 // Inmutable: adoptar no lo modifica, devuelve un gato nuevo con el cambio.
-export class Gato {
+export class Gato extends DatosDeGato {
   private constructor(
     readonly id: number,
-    readonly nombre: string,
-    readonly nacimiento: string,
-    readonly alergias: string,
-    readonly duenioId: number | null,
+    nombre: string,
+    nacimiento: string,
+    alergias: string,
+    duenioId: number | null,
     readonly adoptado: boolean,
-  ) {}
+  ) {
+    super(nombre, nacimiento, alergias, duenioId)
+  }
 
-  static reconstruir(datos: IGatoGuardado): Gato {
-    return new Gato(datos.id, datos.nombre, datos.nacimiento, datos.alergias, datos.duenioId, datos.adoptado)
+  static reconstruir(id: number, datos: DatosDeGato, adoptado: boolean): Gato {
+    return new Gato(id, datos.nombre, datos.nacimiento, datos.alergias, datos.duenioId, adoptado)
   }
 
   get enAdopcion(): boolean {

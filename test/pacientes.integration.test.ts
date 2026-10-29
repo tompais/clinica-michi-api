@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
-import type { IDatosDeDuenio } from '../src/pacientes/dominio/duenio'
-import type { IDatosDeGato } from '../src/pacientes/dominio/gato'
+import type { CrearDuenioRequestBody } from '../src/pacientes/infraestructura/http/crear-duenio.request-body'
+import type { CrearGatoRequestBody } from '../src/pacientes/infraestructura/http/crear-gato.request-body'
 import type { GatoResponse } from '../src/pacientes/infraestructura/http/gato.response'
 import { DuenioEntity } from '../src/pacientes/infraestructura/persistencia/duenio.entity'
 import { COPITO, PANCHO, usarClinicaDePrueba } from './support/app-de-prueba'
@@ -29,7 +29,7 @@ describe('Pacientes', () => {
 
   it('crea un gato con valores por defecto cuando no mandan alergias ni dueño', async () => {
     // Arrange
-    const gatoNuevo: Partial<IDatosDeGato> = { nombre: 'Luna', nacimiento: '2024-05-02' }
+    const gatoNuevo: Partial<CrearGatoRequestBody> = { nombre: 'Luna', nacimiento: '2024-05-02' }
 
     // Act
     const respuesta = await clinica().http().post('/gatos').send(gatoNuevo)
@@ -41,7 +41,7 @@ describe('Pacientes', () => {
 
   it('rechaza un dueño con un email inválido', async () => {
     // Arrange
-    const duenio: IDatosDeDuenio = { nombre: 'Ana', email: 'no-es-un-mail' }
+    const duenio: CrearDuenioRequestBody = { nombre: 'Ana', email: 'no-es-un-mail' }
 
     // Act
     const respuesta = await clinica().http().post('/duenios').send(duenio)

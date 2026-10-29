@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import type { Repository } from 'typeorm'
 import { NoEncontrado } from '../../../shared/dominio/errores'
-import type { Duenio, IDatosDeDuenio } from '../../dominio/duenio'
+import type { DatosDeDuenio, Duenio } from '../../dominio/duenio'
 import type { IDuenioRepository } from '../../dominio/duenio.repository'
 import { DuenioEntity } from './duenio.entity'
 import { duenioADominio } from './duenio.mapper'
@@ -12,7 +12,7 @@ import { duenioADominio } from './duenio.mapper'
 export class DuenioRepository implements IDuenioRepository {
   constructor(@InjectRepository(DuenioEntity) private readonly repo: Repository<DuenioEntity>) {}
 
-  async crear(datos: IDatosDeDuenio): Promise<Duenio> {
+  async crear(datos: DatosDeDuenio): Promise<Duenio> {
     const fila = await this.repo.save(this.repo.create(datos))
     return duenioADominio(fila)
   }

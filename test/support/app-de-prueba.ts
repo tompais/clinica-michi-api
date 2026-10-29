@@ -3,7 +3,7 @@ import { Test } from '@nestjs/testing'
 import request from 'supertest'
 import { DataSource } from 'typeorm'
 import { afterAll, beforeAll, beforeEach, type Mocked, vi } from 'vitest'
-import type { IDatosDeAdopcion } from '../../src/adopciones/dominio/adopcion'
+import type { AdoptarGatoRequestBody } from '../../src/adopciones/infraestructura/http/adoptar-gato.request-body'
 import { AppModule } from '../../src/app.module'
 import type { GatoResponse } from '../../src/pacientes/infraestructura/http/gato.response'
 import { sumarHoras } from '../../src/shared/dominio/fechas'
@@ -11,7 +11,7 @@ import { cargarDatosDeEjemplo } from '../../src/shared/infraestructura/database/
 import { configurarApp } from '../../src/shared/infraestructura/http/configurar-app'
 import { EVENTO_PUBLISHER, type IEventoPublisher } from '../../src/shared/mensajeria/dominio/evento-publisher'
 import { AVISADOR, type IAvisador } from '../../src/turnos/dominio/avisador'
-import type { IDatosDeTurno } from '../../src/turnos/dominio/turno'
+import type { ReservarTurnoRequestBody } from '../../src/turnos/infraestructura/http/reservar-turno.request-body'
 
 // Los ids que deja cargarDatosDeEjemplo. Con nombre, para que los tests se lean solos.
 export const PANCHO = 1
@@ -51,7 +51,7 @@ export class AppDePrueba {
   }
 
   // Partial: algunos tests mandan pedidos incompletos a propósito.
-  reservarTurno(pedido: Partial<IDatosDeTurno>): request.Test {
+  reservarTurno(pedido: Partial<ReservarTurnoRequestBody>): request.Test {
     return this.http().post('/turnos').send(pedido)
   }
 
@@ -59,7 +59,7 @@ export class AppDePrueba {
     return this.http().post(`/turnos/${id}/cancelar`)
   }
 
-  adoptar(pedido: IDatosDeAdopcion): request.Test {
+  adoptar(pedido: AdoptarGatoRequestBody): request.Test {
     return this.http().post('/adopciones').send(pedido)
   }
 

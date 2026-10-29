@@ -1,14 +1,18 @@
 import { describe, expect, it } from 'vitest'
 import { EnviarRecordatoriosCasoDeUso } from '../src/recordatorios/aplicacion/enviar-recordatorios.caso-de-uso'
 import { diasDespues } from '../src/shared/dominio/fechas'
-import type { IDatosDeTurno } from '../src/turnos/dominio/turno'
+import type { ReservarTurnoRequestBody } from '../src/turnos/infraestructura/http/reservar-turno.request-body'
 import { NUBE, TOM, usarClinicaDePrueba } from './support/app-de-prueba'
 
 describe('Job de recordatorios', () => {
   const clinica = usarClinicaDePrueba()
 
   function reservar(gatoId: number, dias: number, hora: number) {
-    const pedido: IDatosDeTurno = { gatoId, fechaHora: diasDespues(new Date(), dias, hora), motivo: 'Control' }
+    const pedido: ReservarTurnoRequestBody = {
+      gatoId,
+      fechaHora: diasDespues(new Date(), dias, hora),
+      motivo: 'Control',
+    }
     return clinica().reservarTurno(pedido)
   }
 

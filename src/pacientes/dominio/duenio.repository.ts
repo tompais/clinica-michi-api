@@ -1,8 +1,8 @@
-import type { Duenio, IDatosDeDuenio } from './duenio'
+import type { DatosDeDuenio, Duenio } from './duenio'
 
 // Puerto: lo que el dominio necesita del archivo de dueños.
 export interface IDuenioRepository {
-  crear(datos: IDatosDeDuenio): Promise<Duenio>
+  crear(datos: DatosDeDuenio): Promise<Duenio>
   // Borrado lógico. Si no existe, tira NoEncontrado.
   darDeBaja(id: number): Promise<void>
 }

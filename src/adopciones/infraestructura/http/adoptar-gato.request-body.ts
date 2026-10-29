@@ -1,7 +1,6 @@
 import { IsInt } from 'class-validator'
-import type { IDatosDeAdopcion } from '../../dominio/adopcion'
 
-export class AdoptarGatoRequestBody implements IDatosDeAdopcion {
+export class AdoptarGatoRequestBody {
   @IsInt()
   readonly gatoId: number
 

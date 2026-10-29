@@ -3,7 +3,7 @@ import { GatoEntity } from './gato.entity'
 
 // Traduce entre la entidad del dominio y la fila de la base, en los dos sentidos.
 export function gatoADominio(fila: GatoEntity): Gato {
-  return Gato.reconstruir(fila)
+  return Gato.reconstruir(fila.id, fila, fila.adoptado)
 }
 
 export function gatoAEntity(gato: Gato): GatoEntity {

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { EstadoTurno } from '../src/turnos/dominio/estado-turno'
-import type { IDatosDeTurno } from '../src/turnos/dominio/turno'
+import type { ReservarTurnoRequestBody } from '../src/turnos/infraestructura/http/reservar-turno.request-body'
 import { enHoras, NUBE, usarClinicaDePrueba } from './support/app-de-prueba'
 
 describe('Turnos', () => {
@@ -8,7 +8,7 @@ describe('Turnos', () => {
 
   it('reserva un turno pendiente y le avisa al dueño', async () => {
     // Arrange
-    const pedido: IDatosDeTurno = { gatoId: NUBE, fechaHora: enHoras(24), motivo: 'Vacuna' }
+    const pedido: ReservarTurnoRequestBody = { gatoId: NUBE, fechaHora: enHoras(24), motivo: 'Vacuna' }
 
     // Act
     const respuesta = await clinica().reservarTurno(pedido)

@@ -1,10 +1,9 @@
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, type Relation } from 'typeorm'
-import type { IGatoGuardado } from '../../dominio/gato'
 import { DuenioEntity } from './duenio.entity'
 
 // Cómo se guarda un gato en la tabla gatos.
 @Entity('gatos')
-export class GatoEntity implements IGatoGuardado {
+export class GatoEntity {
   @PrimaryGeneratedColumn()
   id: number
 
