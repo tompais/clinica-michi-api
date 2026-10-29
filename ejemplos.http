@@ -1,0 +1,44 @@
+### Pedidos de ejemplo. En WebStorm o en VS Code (extensión REST Client) se corren con el botón ▶ de cada uno.
+@base = http://localhost:3000
+
+### Ver los gatos (vienen cargados Nube, Tom y Copito)
+GET {{base}}/gatos
+
+### Crear un dueño
+POST {{base}}/duenios
+Content-Type: application/json
+
+{ "nombre": "Sofi", "email": "sofi@mail.com" }
+
+### Crear un gato de Sofi (el dueño 3)
+POST {{base}}/gatos
+Content-Type: application/json
+
+{ "nombre": "Manchita", "nacimiento": "2022-05-20", "duenioId": 3 }
+
+### Reservar un turno (cambiá la fecha por una futura)
+POST {{base}}/turnos
+Content-Type: application/json
+
+{ "gatoId": 1, "fechaHora": "2030-11-05T10:30:00.000Z", "motivo": "Vacuna triple" }
+
+### Turno en el pasado: responde 422 por una regla del dominio
+POST {{base}}/turnos
+Content-Type: application/json
+
+{ "gatoId": 1, "fechaHora": "2020-01-01T10:00:00.000Z", "motivo": "Control" }
+
+### Sin motivo: responde 400 por la validación del DTO
+POST {{base}}/turnos
+Content-Type: application/json
+
+{ "gatoId": 1, "fechaHora": "2030-11-05T11:00:00.000Z" }
+
+### Adoptar a Copito (gato 3) con Rita (dueña 2): corre en una transacción
+POST {{base}}/adopciones
+Content-Type: application/json
+
+{ "gatoId": 3, "duenioId": 2 }
+
+### Dar de baja a Pancho: borrado lógico, la ficha queda con fecha de baja
+DELETE {{base}}/duenios/1

@@ -1,0 +1,70 @@
+# CI Release: arma la versión nueva con el último main que tiene el CI en verde.
+# Este sí es real: crea el tag, el release en GitHub y la etiqueta de la imagen.
+name: CI Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      bump:
+        description: "SemVer bump. Ignored if 'version' is provided."
+        type: choice
+        options: [patch, minor, major]
+        default: patch
+      version:
+        description: "(optional) Explicit version, strict format: vMAJOR.MINOR.PATCH."
+        required: false
+      sha_override:
+        description: "(optional) Specific SHA. Must be reachable from origin/main."
+        required: false
+
+permissions:
+  contents: write
+  packages: write
+  actions: read
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+      BUMP: ${{ inputs.bump }}
+      VERSION: ${{ inputs.version }}
+      SHA: ${{ inputs.sha_override }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Calcular la versión y el commit
+        id: calc
+        run: |
+          if [ -n "$VERSION" ]; then
+            NEXT="$VERSION"
+          else
+            LAST=$(git tag --list 'v*' --sort=-v:refname | head -1)
+            LAST=${LAST:-v0.0.0}
+            IFS=. read -r MA MI PA <<< "${LAST#v}"
+            case "$BUMP" in
+              major) MA=$((MA+1)); MI=0; PA=0 ;;
+              minor) MI=$((MI+1)); PA=0 ;;
+              patch) PA=$((PA+1)) ;;
+            esac
+            NEXT="v$MA.$MI.$PA"
+          fi
+          # Sin sha_override: el último commit de main con el CI en verde.
+          TARGET="${SHA:-$(gh run list --workflow CI --branch main --status success --limit 1 --json headSha --jq '.[0].headSha')}"
+          echo "next=$NEXT" >> "$GITHUB_OUTPUT"
+          echo "target=$TARGET" >> "$GITHUB_OUTPUT"
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Etiquetar la imagen con la versión
+        run: |
+          REPO="ghcr.io/${GITHUB_REPOSITORY}"
+          docker buildx imagetools create -t "$REPO:${{ steps.calc.outputs.next }}" "$REPO:${{ steps.calc.outputs.target }}"
+      - name: Crear el release
+        run: |
+          gh release create "${{ steps.calc.outputs.next }}" --target "${{ steps.calc.outputs.target }}" --title "${{ steps.calc.outputs.next }}" --generate-notes
+          echo "### 🏷️ Release ${{ steps.calc.outputs.next }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "Commit: \`${{ steps.calc.outputs.target }}\`" >> "$GITHUB_STEP_SUMMARY"

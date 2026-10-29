@@ -1,0 +1,31 @@
+# La forma más fácil de levantar todo: docker compose up
+# Levanta un Postgres y la API. La API corre las migraciones y carga datos de ejemplo al arrancar.
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: clinica
+      POSTGRES_PASSWORD: clinica
+      POSTGRES_DB: clinica
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U clinica"]
+      interval: 2s
+      retries: 15
+
+  api:
+    build: .
+    environment:
+      DATABASE_URL: postgres://clinica:clinica@db:5432/clinica
+      ROL: api
+      PUBSUB_HABILITADO: "false"
+      CARGAR_EJEMPLOS: "true"
+      PORT: "3000"
+    # En la nube las migraciones las corre el workflow Migrate. Acá, para que sea fácil, antes de arrancar.
+    command: ["sh", "-c", "bun run migration:run && bun src/main.ts"]
+    ports:
+      - "3000:3000"
+    depends_on:
+      db:
+        condition: service_healthy

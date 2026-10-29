@@ -1,0 +1,47 @@
+# Migrate: corre las migraciones pendientes antes del deploy, con la misma imagen.
+# En este repo de ejemplo es simulado: no hay una base de staging ni de prod.
+name: Migrate
+
+on:
+  workflow_dispatch:
+    inputs:
+      env:
+        description: Target environment
+        type: choice
+        options: [staging, prod]
+        default: staging
+      sha_override:
+        description: "(optional) Specific SHA. Mutually exclusive with 'version'."
+        required: false
+      version:
+        description: "(optional) Release tag e.g. 'v1.2.3'. Required for envs in require_release_for."
+        required: false
+      dry_run:
+        description: Run migrate dry-run instead of applying.
+        type: boolean
+        default: false
+
+jobs:
+  migrate:
+    runs-on: ubuntu-latest
+    env:
+      ENVIRONMENT: ${{ inputs.env }}
+      SHA: ${{ inputs.sha_override }}
+      VERSION: ${{ inputs.version }}
+      DRY_RUN: ${{ inputs.dry_run }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validar los datos
+        run: |
+          if [ -n "$SHA" ] && [ -n "$VERSION" ]; then echo "::error::sha_override y version son excluyentes"; exit 1; fi
+          if [ "$ENVIRONMENT" = "prod" ] && [ -z "$VERSION" ]; then echo "::error::En prod va el release tag"; exit 1; fi
+      - name: Migrar (simulado)
+        run: |
+          echo "🗃️ [$ENVIRONMENT] imagen ghcr.io/${GITHUB_REPOSITORY}:${VERSION:-$SHA}" | tee -a "$GITHUB_STEP_SUMMARY"
+          echo "Migraciones del repo:" | tee -a "$GITHUB_STEP_SUMMARY"
+          ls src/shared/infraestructura/database/migrations | tee -a "$GITHUB_STEP_SUMMARY"
+          if [ "$DRY_RUN" = "true" ]; then
+            echo "🧪 dry_run: solo muestra qué correría, no aplica nada." | tee -a "$GITHUB_STEP_SUMMARY"
+          else
+            echo "En el equipo, acá corre: bun run migration:run contra la base de $ENVIRONMENT." | tee -a "$GITHUB_STEP_SUMMARY"
+          fi

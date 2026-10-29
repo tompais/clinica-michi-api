@@ -1,0 +1,45 @@
+# CI - Deploy: despliegue all-in. Siempre en staging y para los jobs en prod.
+# En este repo de ejemplo el despliegue es simulado: valida los datos y muestra el plan.
+name: CI - Deploy
+
+on:
+  workflow_dispatch:
+    inputs:
+      env:
+        description: Target environment
+        type: choice
+        options: [staging, prod]
+        default: staging
+      workload:
+        description: "(optional) Workload to deploy. Empty = ALL workloads of the env."
+        required: false
+      sha_override:
+        description: "(optional) Specific SHA. Mutually exclusive with 'version'."
+        required: false
+      version:
+        description: "(optional) Release tag e.g. 'v1.2.3'. Required for envs in require_release_for."
+        required: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      ENVIRONMENT: ${{ inputs.env }}
+      WORKLOAD: ${{ inputs.workload }}
+      SHA: ${{ inputs.sha_override }}
+      VERSION: ${{ inputs.version }}
+    steps:
+      - name: Validar los datos
+        run: |
+          if [ -n "$SHA" ] && [ -n "$VERSION" ]; then echo "::error::sha_override y version son excluyentes: se llena uno solo"; exit 1; fi
+          if [ -z "$SHA" ] && [ -z "$VERSION" ]; then echo "::error::Falta el SHA (previos) o la versión (prod)"; exit 1; fi
+          if [ "$ENVIRONMENT" = "prod" ] && [ -z "$VERSION" ]; then echo "::error::En prod va el release tag, no el SHA"; exit 1; fi
+      - name: Desplegar (simulado)
+        run: |
+          IMAGEN="ghcr.io/${GITHUB_REPOSITORY}:${VERSION:-$SHA}"
+          WORKLOADS="${WORKLOAD:-api job-recordatorios}"
+          for W in $WORKLOADS; do
+            echo "🚀 [$ENVIRONMENT] $W ← $IMAGEN (all-in)" | tee -a "$GITHUB_STEP_SUMMARY"
+          done
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "En el equipo, acá se despliega en Cloud Run. En este repo de ejemplo solo se muestra el plan." >> "$GITHUB_STEP_SUMMARY"

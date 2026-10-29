@@ -1,0 +1,62 @@
+# CI - Deploy (canary / blue-green): para la API en producción.
+# En este repo de ejemplo el despliegue es simulado: muestra cómo se repartiría el tráfico.
+name: CI - Deploy (canary / blue-green)
+
+on:
+  workflow_dispatch:
+    inputs:
+      env:
+        description: Target environment
+        type: choice
+        options: [prod, staging]
+        default: prod
+      workload:
+        description: "(optional) Workload. Empty = fan-out to ALL workloads of the env in parallel."
+        required: false
+        default: api
+      strategy:
+        description: "canary: gradual traffic shift / blue-green: atomic switch."
+        type: choice
+        options: [canary, blue-green]
+        default: canary
+      stages:
+        description: "Canary: percentages per stage. Ignored for blue-green."
+        default: "10,50,100"
+      stage_interval_seconds:
+        description: "Canary: seconds between stages."
+        default: "60"
+      sha_override:
+        description: "(optional) Specific SHA. Mutually exclusive with 'version'."
+        required: false
+      version:
+        description: "(optional) Release tag e.g. 'v1.2.3'. Required for envs in require_release_for."
+        required: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      ENVIRONMENT: ${{ inputs.env }}
+      WORKLOAD: ${{ inputs.workload }}
+      STRATEGY: ${{ inputs.strategy }}
+      STAGES: ${{ inputs.stages }}
+      SHA: ${{ inputs.sha_override }}
+      VERSION: ${{ inputs.version }}
+    steps:
+      - name: Validar los datos
+        run: |
+          if [ -n "$SHA" ] && [ -n "$VERSION" ]; then echo "::error::sha_override y version son excluyentes"; exit 1; fi
+          if [ "$ENVIRONMENT" = "prod" ] && [ -z "$VERSION" ]; then echo "::error::En prod va el release tag"; exit 1; fi
+      - name: Desplegar (simulado)
+        run: |
+          IMAGEN="ghcr.io/${GITHUB_REPOSITORY}:${VERSION:-$SHA}"
+          echo "🆕 [$ENVIRONMENT] ${WORKLOAD:-api}: revisión nueva con $IMAGEN, sin tráfico" | tee -a "$GITHUB_STEP_SUMMARY"
+          if [ "$STRATEGY" = "blue-green" ]; then
+            echo "🔀 Se prueba green y se pasa el 100% de una" | tee -a "$GITHUB_STEP_SUMMARY"
+          else
+            for P in ${STAGES//,/ }; do
+              echo "🐤 Canary: $P% a la versión nueva. Se miran los errores antes de seguir." | tee -a "$GITHUB_STEP_SUMMARY"
+              sleep 2
+            done
+          fi
+          echo "✅ Listo. Si algo fallaba, el tráfico volvía a la revisión anterior." | tee -a "$GITHUB_STEP_SUMMARY"
