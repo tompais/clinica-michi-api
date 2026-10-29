@@ -30,7 +30,7 @@ jobs:
       VERSION: ${{ inputs.version }}
       DRY_RUN: ${{ inputs.dry_run }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Validar los datos
         run: |
           if [ -n "$SHA" ] && [ -n "$VERSION" ]; then echo "::error::sha_override y version son excluyentes"; exit 1; fi
