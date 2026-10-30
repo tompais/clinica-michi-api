@@ -4,13 +4,10 @@ import { ReglaDeNegocioRota } from '../../shared/dominio/errores'
 import { AVISADOR, type IAvisador } from '../dominio/avisador'
 import { type DatosDeTurno, Turno } from '../dominio/turno'
 import { type ITurnoRepository, TURNO_REPOSITORY } from '../dominio/turno.repository'
-import { WhatsAppAvisador } from '../infraestructura/avisos/whatsapp.avisador'
 
 // Caso de uso: arma el paso a paso con piezas del dominio. Pide los puertos por su Symbol.
 @Injectable()
 export class ReservarTurnoCasoDeUso {
-  private readonly whatsapp = new WhatsAppAvisador()
-
   constructor(
     @Inject(TURNO_REPOSITORY) private readonly turnos: ITurnoRepository,
     @Inject(GATO_REPOSITORY) private readonly gatos: IGatoRepository,
@@ -24,11 +21,6 @@ export class ReservarTurnoCasoDeUso {
 
     await this.turnos.guardar(turno)
     await this.avisador.avisarTurnoReservado(turno)
-    try {
-      await this.whatsapp.enviar(turno)
-    } catch {
-      // si falla el whatsapp no pasa nada
-    }
     return turno
   }
 
