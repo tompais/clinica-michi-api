@@ -20,7 +20,7 @@ Content-Type: application/json
 POST {{base}}/gatos
 Content-Type: application/json
 
-{ "nombre": "Manchita", "nacimiento": "2022-05-20", "duenioId": 3 }
+{ "nombre": "Manchita", "nacimiento": "2022-05-20", "duenioId": 3, "apodo": "Manchi" }
 
 ### Reservar un turno (cambiá la fecha por una futura)
 POST {{base}}/turnos

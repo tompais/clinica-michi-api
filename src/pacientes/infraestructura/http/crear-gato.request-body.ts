@@ -16,4 +16,6 @@ export class CrearGatoRequestBody {
   @IsOptional()
   @IsInt()
   readonly duenioId: number | null = null
+
+  readonly apodo?: string
 }

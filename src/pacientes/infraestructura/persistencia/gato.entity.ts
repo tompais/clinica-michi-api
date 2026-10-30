@@ -20,6 +20,9 @@ export class GatoEntity {
   @Column({ default: false })
   adoptado: boolean
 
+  @Column({ nullable: true })
+  apodo?: string
+
   // null a propósito: un gato sin dueño está en adopción.
   @Column({ name: 'duenio_id', type: 'int', nullable: true })
   duenioId: number | null

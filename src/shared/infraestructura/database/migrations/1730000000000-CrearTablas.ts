@@ -17,6 +17,7 @@ export class CrearTablas1730000000000 implements MigrationInterface {
         nombre TEXT NOT NULL,
         nacimiento DATE NOT NULL,
         adoptado BOOLEAN NOT NULL DEFAULT false,
+        apodo TEXT,
         -- NULL a propósito: un gato sin dueño está en adopción.
         -- RESTRICT: no se puede borrar un dueño que todavía tiene gatos.
         duenio_id INT REFERENCES duenios(id) ON DELETE RESTRICT
