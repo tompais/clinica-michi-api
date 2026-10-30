@@ -1,6 +1,6 @@
-import { Body, Controller, Get, Post, Query } from '@nestjs/common'
-import { CrearGatoCasoDeUso } from '../../aplicacion/crear-gato.caso-de-uso'
-import { ListarGatosCasoDeUso } from '../../aplicacion/listar-gatos.caso-de-uso'
+import { Body, Controller, Get, Inject, Post, Query } from '@nestjs/common'
+import { CREAR_GATO_CASO_DE_USO, type ICrearGatoCasoDeUso } from '../../aplicacion/puertos/crear-gato.caso-de-uso'
+import { type IListarGatosCasoDeUso, LISTAR_GATOS_CASO_DE_USO } from '../../aplicacion/puertos/listar-gatos.caso-de-uso'
 import { CrearGatoRequestBody } from './crear-gato.request-body'
 import { GatoResponse } from './gato.response'
 import { ListarGatosQuery } from './listar-gatos.query'
@@ -8,8 +8,8 @@ import { ListarGatosQuery } from './listar-gatos.query'
 @Controller('gatos')
 export class GatosController {
   constructor(
-    private readonly crearGato: CrearGatoCasoDeUso,
-    private readonly listarGatos: ListarGatosCasoDeUso,
+    @Inject(CREAR_GATO_CASO_DE_USO) private readonly crearGato: ICrearGatoCasoDeUso,
+    @Inject(LISTAR_GATOS_CASO_DE_USO) private readonly listarGatos: IListarGatosCasoDeUso,
   ) {}
 
   @Get()

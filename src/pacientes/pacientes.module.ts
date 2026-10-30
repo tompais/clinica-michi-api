@@ -4,6 +4,10 @@ import { CrearDuenioCasoDeUso } from './aplicacion/crear-duenio.caso-de-uso'
 import { CrearGatoCasoDeUso } from './aplicacion/crear-gato.caso-de-uso'
 import { DarDeBajaDuenioCasoDeUso } from './aplicacion/dar-de-baja-duenio.caso-de-uso'
 import { ListarGatosCasoDeUso } from './aplicacion/listar-gatos.caso-de-uso'
+import { CREAR_DUENIO_CASO_DE_USO } from './aplicacion/puertos/crear-duenio.caso-de-uso'
+import { CREAR_GATO_CASO_DE_USO } from './aplicacion/puertos/crear-gato.caso-de-uso'
+import { DAR_DE_BAJA_DUENIO_CASO_DE_USO } from './aplicacion/puertos/dar-de-baja-duenio.caso-de-uso'
+import { LISTAR_GATOS_CASO_DE_USO } from './aplicacion/puertos/listar-gatos.caso-de-uso'
 import { DUENIO_REPOSITORY } from './dominio/duenio.repository'
 import { GATO_REPOSITORY } from './dominio/gato.repository'
 import { DueniosController } from './infraestructura/http/duenios.controller'
@@ -18,10 +22,10 @@ import { GatoRepository } from './infraestructura/persistencia/gato.repository'
   imports: [TypeOrmModule.forFeature([DuenioEntity, GatoEntity])],
   controllers: [DueniosController, GatosController],
   providers: [
-    CrearDuenioCasoDeUso,
-    DarDeBajaDuenioCasoDeUso,
-    CrearGatoCasoDeUso,
-    ListarGatosCasoDeUso,
+    { provide: CREAR_DUENIO_CASO_DE_USO, useClass: CrearDuenioCasoDeUso },
+    { provide: DAR_DE_BAJA_DUENIO_CASO_DE_USO, useClass: DarDeBajaDuenioCasoDeUso },
+    { provide: CREAR_GATO_CASO_DE_USO, useClass: CrearGatoCasoDeUso },
+    { provide: LISTAR_GATOS_CASO_DE_USO, useClass: ListarGatosCasoDeUso },
     { provide: DUENIO_REPOSITORY, useClass: DuenioRepository },
     { provide: GATO_REPOSITORY, useClass: GatoRepository },
   ],

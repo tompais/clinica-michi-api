@@ -3,9 +3,10 @@ import { EVENTO_PUBLISHER, type IEventoPublisher } from '../../shared/mensajeria
 import type { Adopcion, DatosDeAdopcion } from '../dominio/adopcion'
 import { ADOPCION_REPOSITORY, type IAdopcionRepository } from '../dominio/adopcion.repository'
 import { AdopcionRegistrada } from '../dominio/adopcion-registrada.evento'
+import type { IAdoptarGatoCasoDeUso } from './puertos/adoptar-gato.caso-de-uso'
 
 @Injectable()
-export class AdoptarGatoCasoDeUso {
+export class AdoptarGatoCasoDeUso implements IAdoptarGatoCasoDeUso {
   constructor(
     @Inject(ADOPCION_REPOSITORY) private readonly adopciones: IAdopcionRepository,
     @Inject(EVENTO_PUBLISHER) private readonly eventos: IEventoPublisher,

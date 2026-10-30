@@ -3,7 +3,10 @@ import { Logger } from '@nestjs/common'
 import { NestFactory } from '@nestjs/core'
 import { DataSource } from 'typeorm'
 import { AppModule } from './app.module'
-import { EnviarRecordatoriosCasoDeUso } from './recordatorios/aplicacion/enviar-recordatorios.caso-de-uso'
+import {
+  ENVIAR_RECORDATORIOS_CASO_DE_USO,
+  type IEnviarRecordatoriosCasoDeUso,
+} from './recordatorios/aplicacion/puertos/enviar-recordatorios.caso-de-uso'
 import { Rol } from './shared/configuracion/rol'
 import { cargarDatosDeEjemplo } from './shared/infraestructura/database/datos-de-ejemplo'
 import { usaBaseEnMemoria } from './shared/infraestructura/database/opciones-de-base'
@@ -14,7 +17,7 @@ const PUERTO_POR_DEFECTO = 3000
 // Cloud Run Job: arranca, hace su tarea y termina. No escucha pedidos.
 async function correrJobDeRecordatorios(): Promise<void> {
   const app = await NestFactory.createApplicationContext(AppModule)
-  await app.get(EnviarRecordatoriosCasoDeUso).ejecutar()
+  await app.get<IEnviarRecordatoriosCasoDeUso>(ENVIAR_RECORDATORIOS_CASO_DE_USO).ejecutar(new Date())
   await app.close()
 }
 

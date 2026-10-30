@@ -1,6 +1,9 @@
-import { Body, Controller, Delete, HttpCode, HttpStatus, Param, ParseIntPipe, Post } from '@nestjs/common'
-import { CrearDuenioCasoDeUso } from '../../aplicacion/crear-duenio.caso-de-uso'
-import { DarDeBajaDuenioCasoDeUso } from '../../aplicacion/dar-de-baja-duenio.caso-de-uso'
+import { Body, Controller, Delete, HttpCode, HttpStatus, Inject, Param, ParseIntPipe, Post } from '@nestjs/common'
+import { CREAR_DUENIO_CASO_DE_USO, type ICrearDuenioCasoDeUso } from '../../aplicacion/puertos/crear-duenio.caso-de-uso'
+import {
+  DAR_DE_BAJA_DUENIO_CASO_DE_USO,
+  type IDarDeBajaDuenioCasoDeUso,
+} from '../../aplicacion/puertos/dar-de-baja-duenio.caso-de-uso'
 import { CrearDuenioRequestBody } from './crear-duenio.request-body'
 import { DuenioResponse } from './duenio.response'
 
@@ -8,8 +11,8 @@ import { DuenioResponse } from './duenio.response'
 @Controller('duenios')
 export class DueniosController {
   constructor(
-    private readonly crearDuenio: CrearDuenioCasoDeUso,
-    private readonly darDeBajaDuenio: DarDeBajaDuenioCasoDeUso,
+    @Inject(CREAR_DUENIO_CASO_DE_USO) private readonly crearDuenio: ICrearDuenioCasoDeUso,
+    @Inject(DAR_DE_BAJA_DUENIO_CASO_DE_USO) private readonly darDeBajaDuenio: IDarDeBajaDuenioCasoDeUso,
   ) {}
 
   @Post()

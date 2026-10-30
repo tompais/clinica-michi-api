@@ -61,7 +61,7 @@ Cada módulo sigue la arquitectura hexagonal y tiene las mismas tres carpetas:
 ```
 src/<módulo>/
 ├── dominio/            Entidades inmutables, sus reglas y los puertos (interfaces + Symbol)
-├── aplicacion/         Los casos de uso: un archivo por cosa que hace la clínica
+├── aplicacion/         Los casos de uso, uno por archivo, y en puertos/ su interfaz con su Symbol
 ├── infraestructura/    Los adaptadores: http (controllers, RequestBody, Query y Response), persistencia (entities y repos)
 └── <módulo>.module.ts  Conecta cada puerto con su adaptador
 ```
@@ -79,7 +79,7 @@ La regla de oro: `dominio` no importa nada de Nest, TypeORM ni HTTP. Las flechas
 ### El viaje de `POST /turnos`
 
 1. [`TurnosController`](src/turnos/infraestructura/http/turnos.controller.ts) recibe el pedido. El [`ReservarTurnoRequestBody`](src/turnos/infraestructura/http/reservar-turno.request-body.ts) lo valida.
-2. Llama a [`ReservarTurnoCasoDeUso`](src/turnos/aplicacion/reservar-turno.caso-de-uso.ts), que pide tres puertos por su Symbol: `TURNO_REPOSITORY`, `GATO_REPOSITORY` y `AVISADOR`.
+2. El controller no conoce la clase del caso de uso. Pide la interfaz [`IReservarTurnoCasoDeUso`](src/turnos/aplicacion/puertos/reservar-turno.caso-de-uso.ts) con su Symbol, `RESERVAR_TURNO_CASO_DE_USO`, y Nest le da un [`ReservarTurnoCasoDeUso`](src/turnos/aplicacion/reservar-turno.caso-de-uso.ts). Ese caso de uso, a su vez, pide tres puertos por su Symbol: `TURNO_REPOSITORY`, `GATO_REPOSITORY` y `AVISADOR`.
 3. La entidad [`Turno`](src/turnos/dominio/turno.ts) aplica sus reglas: no se reserva en el pasado.
 4. [`turnos.module.ts`](src/turnos/turnos.module.ts) decide quién ocupa cada puerto: `TurnoRepository` guarda en Postgres y `MailAvisador` avisa al dueño.
 5. El controller devuelve un [`TurnoResponse`](src/turnos/infraestructura/http/turno.response.ts).
@@ -127,7 +127,7 @@ Los deploys y el migrate son simulados porque este repo no tiene una nube de ver
 
 ## Convenciones
 
-- Hexagonal: el dominio no conoce a Nest ni a TypeORM. Los puertos son interfaces con su Symbol.
+- Hexagonal: el dominio no conoce a Nest ni a TypeORM. Los puertos son interfaces con su Symbol: los de salida (repositorios, avisador, eventos) en `dominio/` y los de entrada (los casos de uso) en `aplicacion/puertos/`. Nadie pide una clase concreta: el módulo decide cuál va con `provide` y `useClass`.
 - Entidades del dominio inmutables: cambiar algo devuelve una instancia nueva (`turno.cancelar(ahora)`).
 - Entidades de base en archivos `*.entity.ts`, con nombre `GatoEntity`. Un mapper traduce entre las dos.
 - Repositorios tipados: `Repository<GatoEntity>`. Nada de SQL suelto en el código de la app.

@@ -1,7 +1,16 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, Param, ParseUUIDPipe, Post, Query } from '@nestjs/common'
-import { CancelarTurnoCasoDeUso } from '../../aplicacion/cancelar-turno.caso-de-uso'
-import { ListarTurnosDelDiaCasoDeUso } from '../../aplicacion/listar-turnos-del-dia.caso-de-uso'
-import { ReservarTurnoCasoDeUso } from '../../aplicacion/reservar-turno.caso-de-uso'
+import { Body, Controller, Get, HttpCode, HttpStatus, Inject, Param, ParseUUIDPipe, Post, Query } from '@nestjs/common'
+import {
+  CANCELAR_TURNO_CASO_DE_USO,
+  type ICancelarTurnoCasoDeUso,
+} from '../../aplicacion/puertos/cancelar-turno.caso-de-uso'
+import {
+  type IListarTurnosDelDiaCasoDeUso,
+  LISTAR_TURNOS_DEL_DIA_CASO_DE_USO,
+} from '../../aplicacion/puertos/listar-turnos-del-dia.caso-de-uso'
+import {
+  type IReservarTurnoCasoDeUso,
+  RESERVAR_TURNO_CASO_DE_USO,
+} from '../../aplicacion/puertos/reservar-turno.caso-de-uso'
 import { ListarTurnosQuery } from './listar-turnos.query'
 import { ReservarTurnoRequestBody } from './reservar-turno.request-body'
 import { TurnoResponse } from './turno.response'
@@ -10,9 +19,9 @@ import { TurnoResponse } from './turno.response'
 @Controller('turnos')
 export class TurnosController {
   constructor(
-    private readonly reservarTurno: ReservarTurnoCasoDeUso,
-    private readonly cancelarTurno: CancelarTurnoCasoDeUso,
-    private readonly listarTurnosDelDia: ListarTurnosDelDiaCasoDeUso,
+    @Inject(RESERVAR_TURNO_CASO_DE_USO) private readonly reservarTurno: IReservarTurnoCasoDeUso,
+    @Inject(CANCELAR_TURNO_CASO_DE_USO) private readonly cancelarTurno: ICancelarTurnoCasoDeUso,
+    @Inject(LISTAR_TURNOS_DEL_DIA_CASO_DE_USO) private readonly listarTurnosDelDia: IListarTurnosDelDiaCasoDeUso,
   ) {}
 
   @Get()

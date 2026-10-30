@@ -1,5 +1,8 @@
 import { describe, expect, it } from 'vitest'
-import { EnviarRecordatoriosCasoDeUso } from '../src/recordatorios/aplicacion/enviar-recordatorios.caso-de-uso'
+import {
+  ENVIAR_RECORDATORIOS_CASO_DE_USO,
+  type IEnviarRecordatoriosCasoDeUso,
+} from '../src/recordatorios/aplicacion/puertos/enviar-recordatorios.caso-de-uso'
 import { diasDespues } from '../src/shared/dominio/fechas'
 import type { ReservarTurnoRequestBody } from '../src/turnos/infraestructura/http/reservar-turno.request-body'
 import { NUBE, TOM, usarClinicaDePrueba } from './support/app-de-prueba'
@@ -24,7 +27,9 @@ describe('Job de recordatorios', () => {
     await reservar(TOM, 2, 10)
 
     // Act
-    const enviados = await clinica().app.get(EnviarRecordatoriosCasoDeUso).ejecutar()
+    const enviados = await clinica()
+      .app.get<IEnviarRecordatoriosCasoDeUso>(ENVIAR_RECORDATORIOS_CASO_DE_USO)
+      .ejecutar(new Date())
 
     // Assert
     expect(enviados).toBe(1)
