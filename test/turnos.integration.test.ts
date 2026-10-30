@@ -1,7 +1,9 @@
 import { describe, expect, it } from 'vitest'
+import { diasDespues } from '../src/shared/dominio/fechas'
 import { EstadoTurno } from '../src/turnos/dominio/estado-turno'
 import type { ReservarTurnoRequestBody } from '../src/turnos/infraestructura/http/reservar-turno.request-body'
-import { enHoras, NUBE, usarClinicaDePrueba } from './support/app-de-prueba'
+import type { TurnoResponse } from '../src/turnos/infraestructura/http/turno.response'
+import { comoTexto, enHoras, NUBE, usarClinicaDePrueba } from './support/app-de-prueba'
 
 describe('Turnos', () => {
   const clinica = usarClinicaDePrueba()
@@ -66,5 +68,36 @@ describe('Turnos', () => {
     // Assert
     expect(respuesta.status).toBe(200)
     expect(respuesta.body.estado).toBe(EstadoTurno.CANCELADO)
+  })
+
+  it('lista la agenda de un día, ordenada por hora y con los cancelados', async () => {
+    // Arrange
+    await clinica().reservarTurno({ gatoId: NUBE, fechaHora: diasDespues(new Date(), 1, 11), motivo: 'Control' })
+    const temprano = await clinica().reservarTurno({
+      gatoId: NUBE,
+      fechaHora: diasDespues(new Date(), 1, 9),
+      motivo: 'Vacuna',
+    })
+    await clinica().cancelarTurno(temprano.body.id)
+    await clinica().reservarTurno({ gatoId: NUBE, fechaHora: diasDespues(new Date(), 2, 10), motivo: 'Baño' })
+
+    // Act
+    const respuesta = await clinica()
+      .http()
+      .get(`/turnos?fecha=${comoTexto(diasDespues(new Date(), 1))}`)
+
+    // Assert
+    expect(respuesta.status).toBe(200)
+    const agenda: readonly TurnoResponse[] = respuesta.body
+    expect(agenda.map((turno) => turno.motivo)).toEqual(['Vacuna', 'Control'])
+    expect(agenda[0].estado).toBe(EstadoTurno.CANCELADO)
+  })
+
+  it('pide la fecha para listar la agenda (400)', async () => {
+    // Act
+    const respuesta = await clinica().http().get('/turnos')
+
+    // Assert
+    expect(respuesta.status).toBe(400)
   })
 })

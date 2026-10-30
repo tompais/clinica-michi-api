@@ -28,6 +28,9 @@ Content-Type: application/json
 
 { "gatoId": 1, "fechaHora": "2030-11-05T10:30:00.000Z", "motivo": "Vacuna triple" }
 
+### Ver la agenda de un día (usá la fecha del turno que reservaste)
+GET {{base}}/turnos?fecha=2030-11-05
+
 ### Turno en el pasado: responde 422 por una regla del dominio
 POST {{base}}/turnos
 Content-Type: application/json

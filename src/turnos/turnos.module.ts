@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common'
 import { TypeOrmModule } from '@nestjs/typeorm'
 import { PacientesModule } from '../pacientes/pacientes.module'
 import { CancelarTurnoCasoDeUso } from './aplicacion/cancelar-turno.caso-de-uso'
+import { ListarTurnosDelDiaCasoDeUso } from './aplicacion/listar-turnos-del-dia.caso-de-uso'
 import { ReservarTurnoCasoDeUso } from './aplicacion/reservar-turno.caso-de-uso'
 import { AVISADOR } from './dominio/avisador'
 import { TURNO_REPOSITORY } from './dominio/turno.repository'
@@ -17,6 +18,7 @@ import { TurnoRepository } from './infraestructura/persistencia/turno.repository
   providers: [
     ReservarTurnoCasoDeUso,
     CancelarTurnoCasoDeUso,
+    ListarTurnosDelDiaCasoDeUso,
     { provide: TURNO_REPOSITORY, useClass: TurnoRepository },
     { provide: AVISADOR, useClass: MailAvisador },
   ],

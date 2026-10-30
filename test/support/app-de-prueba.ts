@@ -97,6 +97,13 @@ export function usarClinicaDePrueba(): () => AppDePrueba {
   return () => clinica
 }
 
+// Una fecha como la escribe una persona en la URL: 2030-11-05, en hora local.
+export function comoTexto(fecha: Date): string {
+  const mes = String(fecha.getMonth() + 1).padStart(2, '0')
+  const dia = String(fecha.getDate()).padStart(2, '0')
+  return `${fecha.getFullYear()}-${mes}-${dia}`
+}
+
 export function enHoras(horas: number): Date {
   return sumarHoras(new Date(), horas)
 }
