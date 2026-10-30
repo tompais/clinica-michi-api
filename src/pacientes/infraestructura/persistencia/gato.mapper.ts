@@ -14,5 +14,6 @@ export function gatoAEntity(gato: Gato): GatoEntity {
   fila.alergias = gato.alergias
   fila.duenioId = gato.duenioId
   fila.adoptado = gato.adoptado
+  fila.apodo = gato.apodo
   return fila
 }

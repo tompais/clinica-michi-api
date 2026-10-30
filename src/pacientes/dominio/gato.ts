@@ -8,6 +8,7 @@ export abstract class DatosDeGato {
     readonly alergias: string,
     // null a propósito: un gato sin dueño está en adopción.
     readonly duenioId: number | null,
+    readonly apodo?: string,
   ) {}
 }
 
@@ -21,12 +22,13 @@ export class Gato extends DatosDeGato {
     alergias: string,
     duenioId: number | null,
     readonly adoptado: boolean,
+    apodo?: string,
   ) {
-    super(nombre, nacimiento, alergias, duenioId)
+    super(nombre, nacimiento, alergias, duenioId, apodo)
   }
 
   static reconstruir(id: number, datos: DatosDeGato, adoptado: boolean): Gato {
-    return new Gato(id, datos.nombre, datos.nacimiento, datos.alergias, datos.duenioId, adoptado)
+    return new Gato(id, datos.nombre, datos.nacimiento, datos.alergias, datos.duenioId, adoptado, datos.apodo)
   }
 
   get enAdopcion(): boolean {
