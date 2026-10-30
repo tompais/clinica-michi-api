@@ -80,4 +80,9 @@ describe('Pacientes', () => {
     // Assert
     await expect(borrado).rejects.toThrow(/foreign key/)
   })
+
+  it('busca gatos por nombre', async () => {
+    const respuesta = await clinica().http().get('/gatos/buscar?nombre=nu')
+    expect(respuesta.status).toBe(200)
+  })
 })
