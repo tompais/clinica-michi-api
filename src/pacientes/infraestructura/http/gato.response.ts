@@ -8,9 +8,18 @@ export class GatoResponse {
     readonly alergias: string,
     readonly duenioId: number | null,
     readonly enAdopcion: boolean,
+    readonly apodo?: string,
   ) {}
 
   static desde(gato: Gato): GatoResponse {
-    return new GatoResponse(gato.id, gato.nombre, gato.nacimiento, gato.alergias, gato.duenioId, gato.enAdopcion)
+    return new GatoResponse(
+      gato.id,
+      gato.nombre,
+      gato.nacimiento,
+      gato.alergias,
+      gato.duenioId,
+      gato.enAdopcion,
+      gato.apodo,
+    )
   }
 }
