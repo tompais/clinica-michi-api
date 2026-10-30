@@ -1,4 +1,7 @@
-### Pedidos de ejemplo. En WebStorm o en VS Code (extensión REST Client) se corren con el botón ▶ de cada uno.
+### Pedidos de ejemplo para probar la API sin Postman.
+### 1. Levantá la API con bun run start:dev.
+### 2. Tocá ▶ al lado de cada pedido. La respuesta aparece en un panel abajo.
+### Cada ### separa un pedido. @base es una variable: si la API corre en otro puerto, cambiala acá.
 @base = http://localhost:3000
 
 ### Ver los gatos (vienen cargados Nube, Tom y Copito)
@@ -31,7 +34,7 @@ Content-Type: application/json
 
 { "gatoId": 1, "fechaHora": "2020-01-01T10:00:00.000Z", "motivo": "Control" }
 
-### Sin motivo: responde 400 por la validación del DTO
+### Sin motivo: responde 400 por la validación del RequestBody
 POST {{base}}/turnos
 Content-Type: application/json
 

@@ -23,7 +23,13 @@ Si no hay `DATABASE_URL`, la API usa un Postgres en memoria ([PGlite](https://pg
 
 ### Probar los pedidos
 
-Abrí [`ejemplos.http`](ejemplos.http) en WebStorm o en VS Code (extensión REST Client) y tocá ▶ en cada pedido: ver gatos, crear un dueño, reservar un turno, adoptar a Copito y dar de baja a un dueño.
+[`ejemplos.http`](ejemplos.http) es un archivo con pedidos HTTP listos para mandar a la API desde el editor, sin Postman ni curl. Sirve para ver cómo responde cada endpoint y para probar a mano un cambio antes de abrir el PR.
+
+1. Levantá la API (`bun run start:dev`) y esperá a ver `🐾 API lista`.
+2. Abrí `ejemplos.http`. WebStorm lo entiende solo. En VS Code hace falta la extensión REST Client.
+3. Tocá ▶ al lado del pedido que quieras. La respuesta aparece en un panel, con el código (200, 201, 400, 422) y el JSON.
+
+Trae un pedido por cada caso: ver gatos, filtrar los que están en adopción, crear un dueño y un gato, reservar un turno, los errores 400 y 422, adoptar a Copito y dar de baja a un dueño. Cada `###` separa un pedido y `@base` guarda la dirección de la API.
 
 ## Comandos
 
