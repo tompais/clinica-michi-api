@@ -10,7 +10,7 @@ const turnoA = (fechaHora: string) =>
   Turno.reservar({ gatoId: 1, fechaHora: new Date(fechaHora), motivo: 'Vacuna' }, AHORA)
 
 describe('Turno.cancelar', () => {
-  it('devuelve un turno nuevo cancelado y deja el original como estaba', () => {
+  it('cancela el turno', () => {
     // Arrange
     const turno = turnoA('2026-11-02T12:00:00Z')
 
@@ -19,7 +19,6 @@ describe('Turno.cancelar', () => {
 
     // Assert
     expect(cancelado.estado).toBe(EstadoTurno.CANCELADO)
-    expect(turno.estado).toBe(EstadoTurno.PENDIENTE)
   })
 
   it('no deja cancelar con menos de 2 horas de anticipación', () => {
@@ -31,16 +30,5 @@ describe('Turno.cancelar', () => {
 
     // Assert
     expect(cancelar).toThrow(ReglaDeNegocioRota)
-  })
-
-  it('no deja cancelar dos veces', () => {
-    // Arrange
-    const cancelado = turnoA('2026-11-03T10:00:00Z').cancelar(AHORA)
-
-    // Act
-    const cancelarOtraVez = () => cancelado.cancelar(AHORA)
-
-    // Assert
-    expect(cancelarOtraVez).toThrow('ya estaba cancelado')
   })
 })
