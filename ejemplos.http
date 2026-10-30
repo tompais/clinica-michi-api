@@ -28,6 +28,11 @@ Content-Type: application/json
 
 { "gatoId": 1, "fechaHora": "2030-11-05T10:30:00.000Z", "motivo": "Vacuna triple" }
 
+> {% client.global.set("turnoId", response.body.id) %}
+
+### Cancelar el turno que acabás de reservar. La línea > {% ... %} de arriba guarda su id (solo en WebStorm)
+POST {{base}}/turnos/{{turnoId}}/cancelar
+
 ### Ver la agenda de un día (usá la fecha del turno que reservaste)
 GET {{base}}/turnos?fecha=2030-11-05
 
