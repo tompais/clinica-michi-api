@@ -21,15 +21,16 @@ bun run start:dev
 
 Si no hay `DATABASE_URL`, la API usa un Postgres en memoria ([PGlite](https://pglite.dev)). No hay que instalar nada más. Arranca vacío, corre las migraciones, carga los datos de ejemplo y se borra al apagar.
 
-### Probar los pedidos
+### Probar los pedidos con `ejemplos.http`
 
-[`ejemplos.http`](ejemplos.http) es un archivo con pedidos HTTP listos para mandar a la API desde el editor, sin Postman ni curl. Sirve para ver cómo responde cada endpoint y para probar a mano un cambio antes de abrir el PR.
+[`ejemplos.http`](ejemplos.http) es una lista de pedidos a la API escrita en texto, como una colección de Postman pero guardada en el repo. Cada pedido arranca con `###` y un comentario que dice qué hace.
 
-1. Levantá la API (`bun run start:dev`) y esperá a ver `🐾 API lista`.
-2. Abrí `ejemplos.http`. WebStorm lo entiende solo. En VS Code hace falta la extensión REST Client.
-3. Tocá ▶ al lado del pedido que quieras. La respuesta aparece en un panel, con el código (200, 201, 400, 422) y el JSON.
+1. Levantá la API (opción 1 u opción 2).
+2. Abrí `ejemplos.http` en WebStorm. El cliente HTTP ya viene incluido. En VS Code hace falta la extensión REST Client.
+3. Tocá el ▶ verde que aparece al lado de cada pedido.
+4. La respuesta se abre abajo: el código (200, 201, 400, 422) y el JSON que devolvió la API.
 
-Trae un pedido por cada caso: ver gatos, filtrar los que están en adopción, crear un dueño y un gato, reservar un turno, los errores 400 y 422, adoptar a Copito y dar de baja a un dueño. Cada `###` separa un pedido y `@base` guarda la dirección de la API.
+Los pedidos van en orden: ver gatos, filtrar los que están en adopción, crear un dueño y su gato, reservar turnos (uno bien y dos que fallan a propósito), adoptar a Copito y dar de baja a un dueño. Podés cambiar los datos y volver a correrlos. Si querés empezar de cero, reiniciá la API: con la base en memoria vuelven los datos de ejemplo.
 
 ## Comandos
 
