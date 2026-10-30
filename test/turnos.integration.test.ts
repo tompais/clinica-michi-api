@@ -67,4 +67,10 @@ describe('Turnos', () => {
     expect(respuesta.status).toBe(200)
     expect(respuesta.body.estado).toBe(EstadoTurno.CANCELADO)
   })
+
+  it('trae los turnos del dia', async () => {
+    await clinica().reservarTurno({ gatoId: NUBE, fechaHora: enHoras(24), motivo: 'Vacuna' })
+    const respuesta = await clinica().http().get('/turnos?fecha=2030-11-05')
+    expect(respuesta.status).toBe(200)
+  })
 })
