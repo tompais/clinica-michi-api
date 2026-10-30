@@ -9,8 +9,12 @@ export class CancelarTurnoCasoDeUso implements ICancelarTurnoCasoDeUso {
 
   async ejecutar(id: string): Promise<Turno> {
     const turno = await this.turnos.obtener(id)
-    const cancelado = turno.cancelar(new Date())
-    await this.turnos.guardar(cancelado)
-    return cancelado
+    try {
+      turno.cancelar(new Date())
+    } catch (error) {
+      console.log(error)
+    }
+    await this.turnos.guardar(turno)
+    return turno
   }
 }

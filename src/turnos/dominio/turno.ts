@@ -3,8 +3,6 @@ import { ReglaDeNegocioRota } from '../../shared/dominio/errores'
 import { horasEntre } from '../../shared/dominio/fechas'
 import { EstadoTurno } from './estado-turno'
 
-const HORAS_MINIMAS_PARA_CANCELAR = 2
-
 // Los datos de un turno. Abstracta: no se crea sola, la comparten las clases que tienen estos datos.
 export abstract class DatosDeTurno {
   constructor(
@@ -22,7 +20,7 @@ export class Turno extends DatosDeTurno {
     gatoId: number,
     fechaHora: Date,
     motivo: string,
-    readonly estado: EstadoTurno,
+    public estado: EstadoTurno,
   ) {
     super(gatoId, fechaHora, motivo)
   }
@@ -41,10 +39,11 @@ export class Turno extends DatosDeTurno {
   }
 
   cancelar(ahora: Date): Turno {
-    if (this.estaCancelado) throw new ReglaDeNegocioRota('El turno ya estaba cancelado')
-    if (horasEntre(ahora, this.fechaHora) < HORAS_MINIMAS_PARA_CANCELAR) {
-      throw new ReglaDeNegocioRota(`Se cancela con al menos ${HORAS_MINIMAS_PARA_CANCELAR} horas de anticipación`)
+    if (this.estaCancelado) return this
+    if (horasEntre(ahora, this.fechaHora) < 2) {
+      throw new ReglaDeNegocioRota('Se cancela con al menos 2 horas de anticipación')
     }
-    return new Turno(this.id, this.gatoId, this.fechaHora, this.motivo, EstadoTurno.CANCELADO)
+    this.estado = EstadoTurno.CANCELADO
+    return this
   }
 }
